@@ -38,7 +38,9 @@ documentation: $(BUILD_DIR)
 	cd $(BUILD_DIR); \
 	cmake -DDOCUMENTATION=1 ..; cd ..; \
 	doxygen build/doxygen.conf; \
-	cp README.md ..
+	cp README.md ..; \
+	cd documentation; rm -rf *; \
+	cd ../build; cp -r documentation/html/* ../documentation;
 
 # Clean out the build directory
 .PHONY : clean
