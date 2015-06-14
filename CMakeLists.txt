@@ -11,7 +11,7 @@ set (My_Project_Author "Fletcher T. Penney")
 set (My_Project_Revised_Date "2015-06-05")
 set (My_Project_Version_Major 0)
 set (My_Project_Version_Minor 1)
-set (My_Project_Version_Patch 2)
+set (My_Project_Version_Patch 3)
 
 set (My_Project_Version "${My_Project_Version_Major}.${My_Project_Version_Minor}.${My_Project_Version_Patch}")
 
@@ -88,6 +88,8 @@ add_library(libShamir STATIC
 # remove the extra "lib" from "liblibFOO"
 SET_TARGET_PROPERTIES(libShamir PROPERTIES PREFIX "")
 
+# On some systems, need to specifically link m (math)
+target_link_libraries(libShamir m)
 
 # Create a binary?
 if (NOT DEFINED TEST)
@@ -97,9 +99,6 @@ if (NOT DEFINED TEST)
 		src/GLibFacade.h
 		${header_files}
 	)
-	
-	# On some systems, need to specifically link m (math)
-	# target_link_libraries(shamir libShamir m)
 	
 	target_link_libraries(shamir libShamir)
 endif()
@@ -137,7 +136,7 @@ if (DEFINED TEST)
 	)
 
 	# On some systems, need to specifically link m
-	# target_link_libraries(run_tests m)
+	target_link_libraries(run_tests m)
 
 	# Process source files to look for tests to run
 	add_custom_command (
