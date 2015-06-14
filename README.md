@@ -94,9 +94,16 @@ Full documentation is available online:
 <http://fletcher.github.io/c-sss/index.html>
 
 
+## Documentation ##
+
+Full documentation is available online:
+
+<http://fletcher.github.io/c-sss/index.html>
+
+
 ## License ##
 
-The `c-template` project is released under the MIT License.
+The `c-sss` project is released under the MIT License.
 
 GLibFacade.c and GLibFacade.h are from the MultiMarkdown v4 project:
 
