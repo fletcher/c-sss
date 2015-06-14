@@ -1,12 +1,15 @@
+Main Page {#mainpage}
+=========
+
 ## About ##
 
 |            |                           |
 | ---------- | ------------------------- |
-| Title:     | Shamirs Secret Sharing        |
+| Title:     | c-SSS        |
 | Author:    | Fletcher T. Penney       |
 | Date:      | 2015-06-05 |
 | Copyright: | Copyright © 2015 Fletcher T. Penney.    |
-| Version:   | 0.1.0      |
+| Version:   | 0.1.1      |
 
 
 ## Introduction ##
@@ -84,14 +87,15 @@ If the revealed secret doesn't look right, simply rerun the command. When this
 happens, either the whole secret works, or it doesn't -- there won't be one
 incorrect character surrounded by correct characters.
 
+
 [shamir]:	http://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
 
 
-## Documentation ##
+## Source ##
 
-Full documentation is available online:
+The source is available online:
 
-<http://fletcher.github.io/c-sss/index.html>
+<https://github.com/fletcher/c-sss>
 
 
 ## Documentation ##
@@ -116,7 +120,7 @@ CuTest is released under the zlib/libpng license. See CuTest.c for the text
 of the license.
 
 
-### The MIT License ###
+## The MIT License ##
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
