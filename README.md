@@ -9,7 +9,7 @@ Main Page {#mainpage}
 | Author:    | Fletcher T. Penney       |
 | Date:      | 2015-06-05 |
 | Copyright: | Copyright © 2015 Fletcher T. Penney.    |
-| Version:   | 0.1.2      |
+| Version:   | 0.1.3      |
 
 
 ## Introduction ##
