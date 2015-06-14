@@ -5,12 +5,12 @@ cmake_minimum_required (VERSION 2.6)
 # Define Our Project
 # ==================
 
-set (My_Project_Title "Some Project")
-set (My_Project_Description "A project built using the c-template system.")
-set (My_Project_Author "Somebody")
+set (My_Project_Title "c-SSS")
+set (My_Project_Description "Implementation of Shamir's Secret Sharing in C.")
+set (My_Project_Author "Fletcher T. Penney")
 set (My_Project_Revised_Date "2015-06-05")
-set (My_Project_Version_Major 1)
-set (My_Project_Version_Minor 0)
+set (My_Project_Version_Major 0)
+set (My_Project_Version_Minor 1)
 set (My_Project_Version_Patch 0)
 
 set (My_Project_Version "${My_Project_Version_Major}.${My_Project_Version_Minor}.${My_Project_Version_Patch}")
@@ -36,7 +36,7 @@ string(REGEX REPLACE " " "_" My_Project_Title_Caps ${My_Project_Title_Caps} )
 
 file(READ ${PROJECT_SOURCE_DIR}/LICENSE.txt My_Project_License)
 
-string(REGEX REPLACE "\n" "\n\t" My_Project_License_Indent ${My_Project_License})
+# string(REGEX REPLACE "\n" "\n\t" My_Project_License_Indent ${My_Project_License})
 
 configure_file (
 	"${PROJECT_SOURCE_DIR}/templates/template.c.in"
@@ -60,45 +60,49 @@ configure_file (
 
 # src_files are the primary files, and will be included in doxygen documentation
 set(src_files
-#	src/foo.c
+	src/shamir.c
 )
 
 # primary header files
 set(header_files
+	src/shamir.h
 )
 
 # Utility source files will not be included in doxygen
 set(src_utility_files
-#	src/GLibFacade.c
+	src/strtok.c
 )
 
 set(header_utility_files
-#	src/GLibFacade.h
+	src/strtok.h
 )
 
 # Create a library?
-# add_library(libFOO STATIC
-#	${src_files}
-#	${src_utility_files}
-#	${header_files}
-#	${header_utility_files}
-# )
+add_library(libShamir STATIC
+	${src_files}
+	${src_utility_files}
+	${header_files}
+	${header_utility_files}
+)
 
 # remove the extra "lib" from "liblibFOO"
-# SET_TARGET_PROPERTIES(libFOO PROPERTIES PREFIX "")
+SET_TARGET_PROPERTIES(libShamir PROPERTIES PREFIX "")
 
-# Create a command-line app?
-# if (NOT DEFINED TEST)
-# 	add_executable(main
-# 		src/main.c
-# 		src/GLibFacade.c
-# 		src/GLibFacade.h
-# 		${header_files}
-# 	)
-# 
-#	Link the library to the app?
-#	target_link_libraries(main libFOO)
-# endif()
+
+# Create a binary?
+if (NOT DEFINED TEST)
+	add_executable(shamir
+		src/main.c
+		src/GLibFacade.c
+		src/GLibFacade.h
+		${header_files}
+	)
+	
+	# On some systems, need to specifically link m (math)
+	# target_link_libraries(shamir libShamir m)
+	
+	target_link_libraries(shamir libShamir)
+endif()
 
 
 # Generate doxygen configuration file
@@ -127,10 +131,13 @@ if (DEFINED TEST)
 	add_executable(run_tests
 		${test_files}
 		${src_files}
-		${header_files}
 		${src_utility_files}
+		${header_files}
 		${header_utility_files}
 	)
+
+	# On some systems, need to specifically link m
+	# target_link_libraries(run_tests m)
 
 	# Process source files to look for tests to run
 	add_custom_command (
