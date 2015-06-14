@@ -36,9 +36,10 @@ windows: $(BUILD_DIR)
 .PHONY : documentation
 documentation: $(BUILD_DIR)
 	cd $(BUILD_DIR); \
-	cmake -DDOCUMENTATION=1 ..; cd ..; \
-	doxygen build/doxygen.conf; \
+	cmake -DDOCUMENTATION=1 ..; \
 	cp README.md ..; \
+	cd ..; \
+	doxygen build/doxygen.conf; \
 	cd documentation; rm -rf *; \
 	cd ../build; cp -r documentation/html/* ../documentation;
 
