@@ -87,6 +87,13 @@ incorrect character surrounded by correct characters.
 [shamir]:	http://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
 
 
+## Documentation ##
+
+Full documentation is available online:
+
+<http://fletcher.github.io/c-sss/index.html>
+
+
 ## License ##
 
 The `c-template` project is released under the MIT License.
