@@ -4,9 +4,6 @@
 
 	@My_Project_Copyright@
 
-
-	@My_Project_License_Indent@
-
 */
 
 #include "file.h"

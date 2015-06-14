@@ -1,90 +1,93 @@
+## About ##
 
-# Introduction #
-
-This template was created out of a desire to simplify some of the setup and
-configuration that I was doing over and over each time I started a new project.
-Additionally, I wanted to try to start encouraging some "better practices"
-(though not necessarily "best practices"):
-
-1. [Test-driven development][tdd] -- My development of MultiMarkdown
-	focused on integration testing, but really had no unit testing to
-	speak of.  Some newer projects I began working on were a bit math-
-	heavy, and ensuring that each piece works properly became even more
-	important.  It was also nice to be able to actually develop code that
-	could do *something* (via the test suite), even though the project as
-	a whole was nowhere near complete.)  To accomplish this, I include the
-	[CuTest] project to support writing tests for your code.
-
-2.  Use of the [cmake] build system.  `cmake` is not perfect by any
-	means, but it does offer some very useful features and a means for
-	better integrating the compilation and packaging/installation aspects
-	of development.  Rather than reinventing the wheel each time, this
-	setup incorporates basic `cmake` functionality to make it easy to 
-	control how your project is compiled, and includes automated generation
-	of the test command.
-
-3.	Templates -- `cmake` has a reasonable templating system, so that you
-	can define basic variables (e.g. author, project name, etc.) and allow
-	`cmake` to combine those elements to ensure consistency across source
-	code and README files.
-
-4.	Documentation -- some default setup to allow for [doxygen]-generated
-	documentation.  The generated `README.md` file is used as the main 
-	page, and the source c/header files are included.  Naturally, doxygen
-	is a complex system, so you're responsible for figuring out how to 
-	properly document your code.
+|            |                           |
+| ---------- | ------------------------- |
+| Title:     | Shamirs Secret Sharing        |
+| Author:    | Fletcher T. Penney       |
+| Date:      | 2015-06-05 |
+| Copyright: | Copyright © 2015 Fletcher T. Penney.    |
+| Version:   | 0.1.0      |
 
 
-[tdd]:	https://en.wikipedia.org/wiki/Test-driven_development
-[cmake]:	http://www.cmake.org/
-[CuTest]:	http://cutest.sourceforge.net
-[doxygen]:	http://www.stack.nl/~dimitri/doxygen/
+## Introduction ##
+
+This is an implementation of [Shamir's Secret Sharing][shamir].  It was
+implemented in original c code, based on the javascript example from
+Wikipedia, with a couple of utility routines based on code elsewhere
+on the internet.
+
+As long as it's compiled from source, and you verify the source, you can
+be confident that nothing nefarious is being done with your information.
+
+The idea is that a secret string (e.g. a password, a secret note, etc.)
+is encoded and divided up into a specified number of shares (n). You also
+specify the threshold number of shares required to be able to reconstruct
+the original secret (t).
+
+For example, you can split the secret into three shares, but require only
+two of them to recreate the secret.  This means that if one of the shares
+is lost, or otherwise unavailable, the secret can still be recovered. One
+of the shares, without either of the other two, is useless.
+
+This means that if someone gains access to one, but not two, of the shares,
+they cannot recover any information about the information that was
+encrypted.
 
 
-# How do I use it? #
+## How is it used? ##
 
-You can download the source from [github] and get to work. The file "IMPORTANT"
-contains instructions on the various build commands you can use.
+You have a few options:
 
+	./shamir "Some secret to be encrypted" 3 2 > all-keys.txt
 
-I recommend using the following script to automatically create a new git repo,
-pull in the default project template, and configure git-flow.  You simply have
-to rename your project from `new-project` to whatever you desire:
+This will encrypt the string and generate 3 shares, any 2 of which are required 
+to unlock the secret.  They are written to `all-keys.txt`.  This file should
+immediately be separated, since all of they keys together can be used to 
+decrypt the secret.
 
+	./shamir 3 2 < secret.txt
 
-	#!/bin/sh
-
-	git init new-project
-
-	cd new-project
-
-	git remote add "template" https://github.com/fletcher/c-template.git
-
-	git pull template master
-
-	git flow init -d
-
-	git checkout develop
+This pulls the secret from a text file
 
 
-Using this approach, you can define your own "origin" remote if you like, but
-the "template" remote can be used to update the core project files should any
-improvements come about:
+The easiest way to unlock the information is to place the required keys in a
+text file, with each key on a line by itself.  Each key should be at the
+beginning of the line.
 
-	git checkout develop
-	git merge template master
+	./shamir < keys.txt
 
-**NOTE**: `cmake` is a complex suite of utilities, and if you have trouble you
-will need to get support elsewhere.  If you find errors in this template, by
-all means I want to hear about them and fix them, but this is just a basic 
-framework to get you started.  In all likelihood, all but the most basic
-projects will need some customization.
+This reads the keys from `keys.txt` and uses them to decrypt the secret, 
+which is then output on stdout.
 
 
-[github]:	https://github.com/fletcher/c-template
+## The Shares ##
+
+Each share looks like this:
+
+	0102AA05C0DF2BD6
+
+The first two characters indicate the number of the share (in hex). The
+next two characters indicate how many shares are required to decrypt the
+secret (again in hex).  The next two characters (`AA`), are fake and enable
+the shares to also be used on a website:
+
+<http://www.christophedavid.org/w/c/w.php/Calculators/ShamirSecretSharing>
+
+I cannot vouch for the security of this website -- it claims not to send
+any of your information over the internet, but that may or may not be true.
 
 
-# License #
+## Known Issues ##
+
+There seems to be a bug that causes the decryption process to fail sometimes.
+If the revealed secret doesn't look right, simply rerun the command. When this
+happens, either the whole secret works, or it doesn't -- there won't be one
+incorrect character surrounded by correct characters.
+
+[shamir]:	http://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
+
+
+## License ##
 
 The `c-template` project is released under the MIT License.
 
@@ -99,7 +102,7 @@ CuTest is released under the zlib/libpng license. See CuTest.c for the text
 of the license.
 
 
-## The MIT License ##
+### The MIT License ###
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
