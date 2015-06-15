@@ -54,6 +54,37 @@ configure_file (
 )
 
 
+# =======================
+# Configure for Target OS
+# =======================
+
+# OS X Machines
+if (APPLE)
+
+	# Configure backwards-compatible support (if your project allows it)
+	# SET(CMAKE_OSX_DEPLOYMENT_TARGET "10.4" CACHE STRING "Deployment target for OSX" FORCE)
+
+	# Compile for x86_64 and i386.  ppc no longer supported
+	if(CMAKE_BUILD_TYPE MATCHES "Release")
+		SET (CMAKE_OSX_ARCHITECTURES x86_64;i386)
+	endif(CMAKE_BUILD_TYPE MATCHES "Release")
+
+	# Use PackageMaker for installers?
+	# set (CPACK_GENERATOR PackageMaker)
+	set (CPACK_GENERATOR ZIP)
+
+endif (APPLE)
+
+# Windows Machines
+if (WIN32)
+
+	# Use NSIS to generate installers?
+	# set (CPACK_GENERATOR NSIS)
+	set (CPACK_GENERATOR ZIP)
+
+endif (WIN32)
+
+
 # =============
 # Build Targets
 # =============
@@ -155,4 +186,22 @@ endif()
 # Build Installer with CPack
 # ==========================
 
-# You're on your own here
+# You're largely on your own here
+
+install (TARGETS shamir
+	DESTINATION bin
+)
+
+install (FILES ${CMAKE_CURRENT_BINARY_DIR}/README.md ${PROJECT_SOURCE_DIR}/LICENSE.txt
+	DESTINATION .
+)
+
+set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "${My_Project_Description}")
+set (CPACK_PACKAGE_VENDOR "${My_Project_Author}")
+set (CPACK_PACKAGE_VERSION "${My_Project_Version_Major}.${My_Project_Version_Minor}.${My_Project_Version_Patch}")
+set (CPACK_PACKAGE_VERSION_MAJOR "${My_Project_Version_Major}")
+set (CPACK_PACKAGE_VERSION_MINOR "${My_Project_Version_Minor}")
+set (CPACK_PACKAGE_VERSION_PATCH "My_Project_Version_Patch")
+	
+
+include (CPack)

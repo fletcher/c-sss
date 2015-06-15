@@ -77,6 +77,20 @@ I cannot vouch for the security of this website -- it claims not to send
 any of your information over the internet, but that may or may not be true.
 
 
+## About the Source ##
+
+This project was based on my [c-template] project.  It includes some boilerplate setup to make it easy to incorporate:
+
+* [cmake] for build configuration
+* [CuTest] for unit testing
+* [doxygen] for creating documentation from source files
+
+[c-template]:	https://github.com/fletcher/c-template
+[cmake]:	http://www.cmake.org/
+[CuTest]:	http://cutest.sourceforge.net
+[doxygen]:	http://www.stack.nl/~dimitri/doxygen/
+
+
 ## Known Issues ##
 
 There seems to be a bug that causes the decryption process to fail sometimes.
