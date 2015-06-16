@@ -188,9 +188,11 @@ endif()
 
 # You're largely on your own here
 
-install (TARGETS shamir
-	DESTINATION bin
-)
+if (NOT DEFINED TEST)
+	install (TARGETS shamir
+		DESTINATION bin
+	)
+endif(NOT DEFINED TEST)
 
 install (FILES ${CMAKE_CURRENT_BINARY_DIR}/README.md ${PROJECT_SOURCE_DIR}/LICENSE.txt
 	DESTINATION .
