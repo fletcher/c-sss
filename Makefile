@@ -22,7 +22,13 @@ debug: $(BUILD_DIR)
 .PHONY : xcode
 xcode: $(BUILD_DIR)
 	cd $(BUILD_DIR); \
-	cmake -G Xcode ..; \
+	cmake -G Xcode -DCMAKE_BUILD_TYPE=Release ..; \
+	cp README.md ..
+
+# Xcode for iOS
+ios: $(BUILD_DIR)
+	cd $(BUILD_DIR); \
+	cmake -G Xcode -DCMAKE_TOOLCHAIN_FILE=../tools/iOS.cmake -DCMAKE_BUILD_TYPE=Release ..; \
 	cp README.md ..
 
 # Cross-compile for Windows
