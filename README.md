@@ -42,7 +42,7 @@ You have a few options:
 
 This will encrypt the string and generate 3 shares, any 2 of which are required 
 to unlock the secret.  They are written to `all-keys.txt`.  This file should
-immediately be separated, since all of they keys together can be used to 
+immediately be separated, since all of the keys together can be used to 
 decrypt the secret.
 
 	./shamir 3 2 < secret.txt
@@ -91,12 +91,46 @@ This project was based on my [c-template] project.  It includes some boilerplate
 [doxygen]:	http://www.stack.nl/~dimitri/doxygen/
 
 
+## Security Issues ##
+
+I am not a cryptologist.  From what I can gather from the internet, Shamir's
+algorithm is secure -- without a sufficient number of shares, you cannot
+"crack the code."  I *believe* that I have implemented the algorithm correctly,
+based on what I can read and the fact that it generates compatible results
+with another implementation.
+
+Because the secret is encrypted one character at a time, you can use the 
+length of the shares to determine the length of the secret.  Depending on
+your needs, you could pad the secret with spaces to obscure the actual
+length.
+
+Naturally, you have to protect the shares as you would the password, especially
+when you have all of them together.
+
+I do not do anything special with the code to guard against any attacks on 
+your machine, such as trying to read memory that was used by the application.
+If someone has (reasonable) suggestions, I am happy to implement them.  But 
+my intent was not to create something that will guard against motivated
+attackers with significant resources.
+
+To the best of my knowledge, this program is reasonably safe to use.  You can
+readily view the source to ensure that your information is not being sent over
+the internet or saved to other files.  But ultimately, it's your responsibility
+to use the software carefully.
+
+If you discover any problems with the program, please let me know!
+
+
 ## Known Issues ##
 
 There seems to be a bug that causes the decryption process to fail sometimes.
 If the revealed secret doesn't look right, simply rerun the command. When this
 happens, either the whole secret works, or it doesn't -- there won't be one
-incorrect character surrounded by correct characters.
+incorrect character surrounded by correct characters.  This seems to only happen
+when c-sss is compiled via `make` and `cmake` on OS X.  It does not happen when
+compiled via Xcode or on Linux.
+
+<https://github.com/fletcher/c-sss/issues/1>
 
 
 [shamir]:	http://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
