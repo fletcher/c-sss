@@ -102,7 +102,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <h2>How is it used?</h2>
 <p>You have a few options: </p>
 <pre class="fragment">./shamir "Some secret to be encrypted" 3 2 &gt; all-keys.txt
-</pre><p>This will encrypt the string and generate 3 shares, any 2 of which are required to unlock the secret. They are written to <code>all-keys.txt</code>. This file should immediately be separated, since all of they keys together can be used to decrypt the secret. </p>
+</pre><p>This will encrypt the string and generate 3 shares, any 2 of which are required to unlock the secret. They are written to <code>all-keys.txt</code>. This file should immediately be separated, since all of the keys together can be used to decrypt the secret. </p>
 <pre class="fragment">./shamir 3 2 &lt; secret.txt
 </pre><p>This pulls the secret from a text file</p>
 <p>The easiest way to unlock the information is to place the required keys in a text file, with each key on a line by itself. Each key should be at the beginning of the line. </p>
@@ -114,8 +114,23 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </pre><p>The first two characters indicate the number of the share (in hex). The next two characters indicate how many shares are required to decrypt the secret (again in hex). The next two characters (<code>AA</code>), are fake and enable the shares to also be used on a website:</p>
 <p><a href="http://www.christophedavid.org/w/c/w.php/Calculators/ShamirSecretSharing">http://www.christophedavid.org/w/c/w.php/Calculators/ShamirSecretSharing</a></p>
 <p>I cannot vouch for the security of this website &ndash; it claims not to send any of your information over the internet, but that may or may not be true.</p>
+<h2>About the Source</h2>
+<p>This project was based on my <a href="https://github.com/fletcher/c-template">c-template</a> project. It includes some boilerplate setup to make it easy to incorporate:</p>
+<ul>
+<li><a href="http://www.cmake.org/">cmake</a> for build configuration</li>
+<li><a href="http://cutest.sourceforge.net">CuTest</a> for unit testing</li>
+<li><a href="http://www.stack.nl/~dimitri/doxygen/">doxygen</a> for creating documentation from source files</li>
+</ul>
+<h2>Security Issues</h2>
+<p>I am not a cryptologist. From what I can gather from the internet, Shamir's algorithm is secure &ndash; without a sufficient number of shares, you cannot "crack the code." I <em>believe</em> that I have implemented the algorithm correctly, based on what I can read and the fact that it generates compatible results with another implementation.</p>
+<p>Because the secret is encrypted one character at a time, you can use the length of the shares to determine the length of the secret. Depending on your needs, you could pad the secret with spaces to obscure the actual length.</p>
+<p>Naturally, you have to protect the shares as you would the password, especially when you have all of them together.</p>
+<p>I do not do anything special with the code to guard against any attacks on your machine, such as trying to read memory that was used by the application. If someone has (reasonable) suggestions, I am happy to implement them. But my intent was not to create something that will guard against motivated attackers with significant resources.</p>
+<p>To the best of my knowledge, this program is reasonably safe to use. You can readily view the source to ensure that your information is not being sent over the internet or saved to other files. But ultimately, it's your responsibility to use the software carefully.</p>
+<p>If you discover any problems with the program, please let me know!</p>
 <h2>Known Issues</h2>
-<p>There seems to be a bug that causes the decryption process to fail sometimes. If the revealed secret doesn't look right, simply rerun the command. When this happens, either the whole secret works, or it doesn't &ndash; there won't be one incorrect character surrounded by correct characters.</p>
+<p>There seems to be a bug that causes the decryption process to fail sometimes. If the revealed secret doesn't look right, simply rerun the command. When this happens, either the whole secret works, or it doesn't &ndash; there won't be one incorrect character surrounded by correct characters. This seems to only happen when c-sss is compiled via <code>make</code> and <code>cmake</code> on OS X. It does not happen when compiled via Xcode or on Linux.</p>
+<p><a href="https://github.com/fletcher/c-sss/issues/1">https://github.com/fletcher/c-sss/issues/1</a></p>
 <h2>Source</h2>
 <p>The source is available online:</p>
 <p><a href="https://github.com/fletcher/c-sss">https://github.com/fletcher/c-sss</a></p>
@@ -135,7 +150,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Jun 14 2015 16:10:56 for c-SSS by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jun 23 2015 13:20:20 for c-SSS by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.4
 </small></address>
