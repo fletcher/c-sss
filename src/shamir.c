@@ -22,10 +22,7 @@
 
 	Limitations:
 
-		* There seems to be a moderate chance that the decoding is incorrect -- 
-			running again usually gives the proper answer.  What's happening?
 		* rand() needs to be seeded before use (see below)
-		* The secret must consist only of basic ASCII characters (char codes < 128)
 
 
 	Copyright © 2015 Fletcher T. Penney. Licensed under the MIT License.
