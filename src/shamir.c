@@ -125,8 +125,12 @@ int * split_number(int number, int n, int t) {
 
 	for (i = 1; i < t; ++i)
 	{
-		/* Generate random coefficients */
+		/* Generate random coefficients -- use arc4random if available */
+#if defined (HAVE_ARC4RANDOM)
+		coef[i] = arc4random_uniform(prime - 1);
+#else
 		coef[i] = rand() % (prime - 1);
+#endif
 	}
 
 	for (x = 0; x < n; ++x)

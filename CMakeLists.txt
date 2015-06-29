@@ -89,6 +89,14 @@ endif (WIN32)
 # Build Targets
 # =============
 
+# Check whether arc4random() is available
+INCLUDE (CheckFunctionExists)
+check_function_exists(arc4random_uniform HAVE_ARC4RANDOM) 
+
+if (DEFINED HAVE_ARC4RANDOM)
+	add_definitions(-DHAVE_ARC4RANDOM)
+endif ()
+
 # src_files are the primary files, and will be included in doxygen documentation
 set(src_files
 	src/shamir.c
