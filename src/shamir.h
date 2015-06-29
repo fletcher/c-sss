@@ -34,6 +34,6 @@ char * generate_share_strings(char * secret, int n, int t);
 	to occur roughly 10% of the time.
 
 */
-char * extract_secret_from_share_strings(char * string);
+char * extract_secret_from_share_strings(const char * string);
 
 #endif

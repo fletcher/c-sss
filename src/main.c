@@ -93,11 +93,11 @@ int main( int argc, char** argv ) {
 
 		char * secret = extract_secret_from_share_strings(shares);
 
-		free(shares);
-
 		fprintf(stdout, "%s\n", secret);
 
 		free(secret);
+
+		free(shares);
 	}
 
 }

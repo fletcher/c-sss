@@ -260,11 +260,6 @@ int join_shares(int *xy_pairs, int n) {
 	/* Sometimes we're getting negative numbers, and need to fix that */
 	secret = (secret + prime) % prime;
 
-	if (secret > 128 ) {
-		// For some reason values > 127 get incremented by one???
-		secret --;
-	}
-
 	return secret;
 }
 
@@ -276,12 +271,12 @@ void Test_join_shares(CuTest* tc) {
 
 	int shares[n*2];
 
-	int count = 500;	/* How many times should we test it? */
+	int count = 255;	/* How many times should we test it? */
 	int j;
 
 	for (j = 0; j < count; ++j)
 	{
-		int * test = split_number(69, n, t);
+		int * test = split_number(j, n, t);
 		int i;
 
 		for (i = 0; i < n; ++i)
@@ -295,7 +290,7 @@ void Test_join_shares(CuTest* tc) {
 
 		free(test);
 
-		CuAssertIntEquals(tc, 69, result);
+		CuAssertIntEquals(tc, j, result);
 	}
 }
 #endif
@@ -330,8 +325,14 @@ char ** split_string(char * secret, int n, int t) {
 	for (i = 0; i < len; ++i)
 	{
 		// fprintf(stderr, "char %c: %d\n", secret[i], (unsigned char) secret[i]);
+		int letter = secret[i]; // - '0';
 
-		int * chunks = split_number(secret[i], n, t);
+		if (letter < 0)
+			letter = 256 + letter;
+
+		//fprintf(stderr, "char: '%c' int: '%d'\n", secret[i], letter);
+
+		int * chunks = split_number(letter, n, t);
 		int j;
 
 		for (j = 0; j < n; ++j)
@@ -424,9 +425,9 @@ void Test_split_string(CuTest* tc) {
 	int n = 255;	/* Maximum n = 255 */
 	int t = 254;	/* t <= n, we choose less than that so we have two tests */
 
-	char * phrase = "This is ä really long passphrase!";
+	char * phrase = "This is a test of Bücher and Später.";
 
-	int count = 20;
+	int count = 10;
 	int i;
 
 	for (i = 0; i < count; ++i)
@@ -501,15 +502,18 @@ void trim_trailing_whitespace(char *str) {
 		into individual shares, and then extract secret
 */
 
-char * extract_secret_from_share_strings(char * string) {
+char * extract_secret_from_share_strings(const char * string) {
 	char ** shares = malloc(sizeof(char *) * 255);
 
 	char * share;
 	char * saveptr = NULL;
 	int i = 0;
 
+	/* strtok_rr modifies the string we are looking at, so make a temp copy */
+	char * temp_string = strdup(string);
+
 	/* Parse the string by line, remove trailing whitespace */
-	share = strtok_rr(string, "\n", &saveptr);
+	share = strtok_rr(temp_string, "\n", &saveptr);
 
 	shares[i] = strdup(share);
 	trim_trailing_whitespace(shares[i]);
@@ -521,7 +525,7 @@ char * extract_secret_from_share_strings(char * string) {
 
 		trim_trailing_whitespace(shares[i]);
 
-		if (strlen(shares[i]) == 0) {
+		if ((shares[i] != NULL) && (strlen(shares[i]) == 0)) {
 			/* Ignore blank lines */
 			free(shares[i]);
 			i--;
@@ -531,6 +535,7 @@ char * extract_secret_from_share_strings(char * string) {
 	i++;
 
 	char * secret = join_strings(shares, i);
+
 
 /*
 	fprintf(stdout, "count: %d\n", i);
