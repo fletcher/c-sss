@@ -4,9 +4,9 @@
 | ---------- | ------------------------- |
 | Title:     | c-SSS        |
 | Author:    | Fletcher T. Penney       |
-| Date:      | 2015-06-05 |
+| Date:      | 2015-06-29 |
 | Copyright: | Copyright © 2015 Fletcher T. Penney.    |
-| Version:   | 0.1.3      |
+| Version:   | 0.2.0      |
 
 
 ## Introduction ##
@@ -119,18 +119,6 @@ the internet or saved to other files.  But ultimately, it's your responsibility
 to use the software carefully.
 
 If you discover any problems with the program, please let me know!
-
-
-## Known Issues ##
-
-There seems to be a bug that causes the decryption process to fail sometimes.
-If the revealed secret doesn't look right, simply rerun the command. When this
-happens, either the whole secret works, or it doesn't -- there won't be one
-incorrect character surrounded by correct characters.  This seems to only happen
-when c-sss is compiled via `make` and `cmake` on OS X.  It does not happen when
-compiled via Xcode or on Linux.
-
-<https://github.com/fletcher/c-sss/issues/1>
 
 
 [shamir]:	http://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
