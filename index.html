@@ -100,15 +100,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>For example, you can split the secret into three shares, but require only two of them to recreate the secret. This means that if one of the shares is lost, or otherwise unavailable, the secret can still be recovered. One of the shares, without either of the other two, is useless.</p>
 <p>This means that if someone gains access to one, but not two, of the shares, they cannot recover any information about the information that was encrypted.</p>
 <h2>How is it used?</h2>
-<<<<<<< HEAD
 <p>You have a few options: </p><pre class="fragment">./shamir "Some secret to be encrypted" 3 2 &gt; all-keys.txt
 </pre><p>This will encrypt the string and generate 3 shares, any 2 of which are required to unlock the secret. They are written to <code>all-keys.txt</code>. This file should immediately be separated, since all of the keys together can be used to decrypt the secret. </p><pre class="fragment">./shamir 3 2 &lt; secret.txt
-=======
-<p>You have a few options: </p>
-<pre class="fragment">./shamir "Some secret to be encrypted" 3 2 &gt; all-keys.txt
-</pre><p>This will encrypt the string and generate 3 shares, any 2 of which are required to unlock the secret. They are written to <code>all-keys.txt</code>. This file should immediately be separated, since all of the keys together can be used to decrypt the secret. </p>
-<pre class="fragment">./shamir 3 2 &lt; secret.txt
->>>>>>> 7d66a5ad238ef343e809421298c4f52a3877ccac
 </pre><p>This pulls the secret from a text file</p>
 <p>The easiest way to unlock the information is to place the required keys in a text file, with each key on a line by itself. Each key should be at the beginning of the line. </p><pre class="fragment">./shamir &lt; keys.txt
 </pre><p>This reads the keys from <code>keys.txt</code> and uses them to decrypt the secret, which is then output on stdout.</p>
@@ -131,12 +124,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>I do not do anything special with the code to guard against any attacks on your machine, such as trying to read memory that was used by the application. If someone has (reasonable) suggestions, I am happy to implement them. But my intent was not to create something that will guard against motivated attackers with significant resources.</p>
 <p>To the best of my knowledge, this program is reasonably safe to use. You can readily view the source to ensure that your information is not being sent over the internet or saved to other files. But ultimately, it's your responsibility to use the software carefully.</p>
 <p>If you discover any problems with the program, please let me know!</p>
-<<<<<<< HEAD
-=======
-<h2>Known Issues</h2>
-<p>There seems to be a bug that causes the decryption process to fail sometimes. If the revealed secret doesn't look right, simply rerun the command. When this happens, either the whole secret works, or it doesn't &ndash; there won't be one incorrect character surrounded by correct characters. This seems to only happen when c-sss is compiled via <code>make</code> and <code>cmake</code> on OS X. It does not happen when compiled via Xcode or on Linux.</p>
-<p><a href="https://github.com/fletcher/c-sss/issues/1">https://github.com/fletcher/c-sss/issues/1</a></p>
->>>>>>> 7d66a5ad238ef343e809421298c4f52a3877ccac
 <h2>Source</h2>
 <p>The source is available online:</p>
 <p><a href="https://github.com/fletcher/c-sss">https://github.com/fletcher/c-sss</a></p>
@@ -155,11 +142,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-<<<<<<< HEAD
-Generated on Mon Jun 29 2015 14:30:52 for c-SSS by &#160;<a href="http://www.doxygen.org/index.html">
-=======
-Generated on Tue Jun 23 2015 13:20:20 for c-SSS by &#160;<a href="http://www.doxygen.org/index.html">
->>>>>>> 7d66a5ad238ef343e809421298c4f52a3877ccac
+Generated on Mon Jun 29 2015 14:33:12 for c-SSS by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>
