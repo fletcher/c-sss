@@ -374,7 +374,8 @@ char * join_strings(char ** shares, int n) {
 	int len = (strlen(shares[0]) - 6) / 2;
 
 	char * result = malloc(len + 1);
-	char codon[2];
+	char codon[3];
+	codon[2] = '\0';	// Must terminate the string!
 
 	int x[n];
 	int i;
