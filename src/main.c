@@ -60,7 +60,7 @@ int main( int argc, char** argv ) {
 	seed_random();
 
 	if (argc == 4) {
-		// Create shares
+		// Create shares -- "secret"  n  t 
 
 		char * secret = argv[1];
 
@@ -74,7 +74,7 @@ int main( int argc, char** argv ) {
 
 		free(shares);
 	} else if (argc == 3) {
-		// Read secret from stdin
+		// Read secret from stdin -- n t < cat secret.txt
 		char * secret = stdin_buffer();
 
 		int n = atoi(argv[1]);
@@ -88,7 +88,7 @@ int main( int argc, char** argv ) {
 		free(shares);
 		free(secret);
 	} else {
-		// Read shares from stdin
+		// Read shares from stdin -- < shares.txt
 		char * shares = stdin_buffer();
 
 		char * secret = extract_secret_from_share_strings(shares);
