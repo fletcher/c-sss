@@ -197,13 +197,15 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	# Create zip archive
 	set (CPACK_GENERATOR ZIP)
 
-	# Some libraries need to be linked on some Linux builds
+		# Some libraries need to be linked on some Linux builds
 	if (DEFINED TEST)
-		# target_link_libraries(run_tests m)
+		target_link_libraries(run_tests m)
+		target_link_libraries(run_tests bsd)
 	endif (DEFINED TEST)
 
 	# On some systems, need to specifically link m (math)
 	target_link_libraries(libShamir m)
+	target_link_libraries(libShamir bsd)
 
 endif (WIN32)
 
