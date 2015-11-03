@@ -54,37 +54,6 @@ configure_file (
 )
 
 
-# =======================
-# Configure for Target OS
-# =======================
-
-# OS X Machines
-if (APPLE)
-
-	# Configure backwards-compatible support (if your project allows it)
-	# SET(CMAKE_OSX_DEPLOYMENT_TARGET "10.4" CACHE STRING "Deployment target for OSX" FORCE)
-
-	# Compile for x86_64 and i386.  ppc no longer supported
-	if(CMAKE_BUILD_TYPE MATCHES "Release")
-		SET (CMAKE_OSX_ARCHITECTURES x86_64;i386)
-	endif(CMAKE_BUILD_TYPE MATCHES "Release")
-
-	# Use PackageMaker for installers?
-	# set (CPACK_GENERATOR PackageMaker)
-	set (CPACK_GENERATOR ZIP)
-
-endif (APPLE)
-
-# Windows Machines
-if (WIN32)
-
-	# Use NSIS to generate installers?
-	# set (CPACK_GENERATOR NSIS)
-	set (CPACK_GENERATOR ZIP)
-
-endif (WIN32)
-
-
 # =============
 # Build Targets
 # =============
@@ -126,9 +95,6 @@ add_library(libShamir STATIC
 
 # remove the extra "lib" from "liblibFOO"
 SET_TARGET_PROPERTIES(libShamir PROPERTIES PREFIX "")
-
-# On some systems, need to specifically link m (math)
-target_link_libraries(libShamir m)
 
 # Create a binary?
 if (NOT DEFINED TEST)
@@ -187,7 +153,59 @@ if (DEFINED TEST)
 
 	add_test( test ${PROJECT_BINARY_DIR}/run_tests)
 
+	# valgrind memory testing
+	find_program (MEMORYCHECK_COMMAND valgrind)
+	SET (MEMORYCHECK_COMMAND_OPTIONS --leak-check=full --error-exitcode=1)
+
+	add_test( memory_test ${MEMORYCHECK_COMMAND} ${MEMORYCHECK_COMMAND_OPTIONS} ${PROJECT_BINARY_DIR}/run_tests)
+
 endif()
+
+
+# =======================
+# Configure for Target OS
+# =======================
+
+# OS X Machines
+if (APPLE)
+
+	# Configure backwards-compatible support (if your project allows it)
+	# SET(CMAKE_OSX_DEPLOYMENT_TARGET "10.4" CACHE STRING "Deployment target for OSX" FORCE)
+
+	# Compile for x86_64 and i386.  ppc no longer supported
+	if(CMAKE_BUILD_TYPE MATCHES "Release")
+		SET (CMAKE_OSX_ARCHITECTURES x86_64;i386)
+	endif(CMAKE_BUILD_TYPE MATCHES "Release")
+
+	# Use PackageMaker for installers?
+	# set (CPACK_GENERATOR PackageMaker)
+	set (CPACK_GENERATOR ZIP)
+
+
+endif (APPLE)
+
+# Windows Machines
+if (WIN32)
+
+	# Use NSIS to generate installers?
+	# set (CPACK_GENERATOR NSIS)
+	set (CPACK_GENERATOR ZIP)
+
+# Linux (but not cross-compiling for Windows)
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+
+	# Create zip archive
+	set (CPACK_GENERATOR ZIP)
+
+	# Some libraries need to be linked on some Linux builds
+	if (DEFINED TEST)
+		# target_link_libraries(run_tests m)
+	endif (DEFINED TEST)
+
+	# On some systems, need to specifically link m (math)
+	target_link_libraries(libShamir m)
+
+endif (WIN32)
 
 
 # ==========================
