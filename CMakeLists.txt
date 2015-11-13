@@ -68,7 +68,7 @@ configure_file (
 INCLUDE (CheckFunctionExists)
 check_function_exists(arc4random_uniform HAVE_ARC4RANDOM) 
 
-if (DEFINED HAVE_ARC4RANDOM)
+if (HAVE_ARC4RANDOM)
 	add_definitions(-DHAVE_ARC4RANDOM)
 endif ()
 
@@ -232,9 +232,9 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	# You may wish to disable this.
 	#
 	
-	# set (CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-	# set (BUILD_SHARED_LIBRARIES OFF)
-	# set (CMAKE_EXE_LINKER_FLAGS "-static")
+	set (CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+	set (BUILD_SHARED_LIBRARIES OFF)
+	set (CMAKE_EXE_LINKER_FLAGS "-static")
 
 endif (WIN32)
 
