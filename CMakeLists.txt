@@ -209,25 +209,32 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	# Create zip archive
 	set (CPACK_GENERATOR ZIP)
 
+	# Some libraries need to be linked on some Linux builds
+	if (DEFINED TEST)
+		target_link_libraries(run_tests m)
+
+	if (DEFINED HAVE_ARC4RANDOM)
+		target_link_libraries(run_tests bsd)
+	endif (DEFINED HAVE_ARC4RANDOM)
+
+	endif (DEFINED TEST)
+
+	# On some systems, need to specifically link m (math)
+	target_link_libraries(libShamir m)
+
+	if (DEFINED HAVE_ARC4RANDOM)
+		target_link_libraries(libShamir bsd)
+	endif (DEFINED HAVE_ARC4RANDOM)
+
 	# Statically link libraries -- might make the binary slightly more
 	# compatible across Linux distributions, for example
 	#
 	# You may wish to disable this.
 	#
 	
-	set (CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-	set (BUILD_SHARED_LIBRARIES OFF)
-	set (CMAKE_EXE_LINKER_FLAGS "-static")
-
-	# Some libraries need to be linked on some Linux builds
-	if (DEFINED TEST)
-		target_link_libraries(run_tests m)
-		target_link_libraries(run_tests bsd)
-	endif (DEFINED TEST)
-
-	# On some systems, need to specifically link m (math)
-	target_link_libraries(libShamir m)
-	target_link_libraries(libShamir bsd)
+	# set (CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+	# set (BUILD_SHARED_LIBRARIES OFF)
+	# set (CMAKE_EXE_LINKER_FLAGS "-static")
 
 endif (WIN32)
 
