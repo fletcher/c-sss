@@ -136,7 +136,7 @@ int * split_number(int number, int n, int t) {
 	for (i = 1; i < t; ++i)
 	{
 		/* prevent degraded polynomials by using non-zero random coefficients */
-		coef[i] = nonzero_random(prime -1);
+		coef[i] = nonzero_random(prime - 1);
 	}
 
 	for (x = 0; x < n; ++x)

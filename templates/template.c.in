@@ -1,10 +1,23 @@
-/*
+/**
 
-	file.c -- @My_Project_Title@
+	@My_Project_Title@ -- @My_Project_Description@
+
+	@file file.c
+
+	@brief 
+
+
+	@author	@My_Project_Author@
+	@bug	
+
+**/
+
+/*
 
 	@My_Project_Copyright@
 
 */
+
 
 #include "file.h"
 
