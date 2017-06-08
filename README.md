@@ -4,9 +4,9 @@
 | ---------- | ------------------------- |  
 | Title:     | c-SSS        |  
 | Author:    | Fletcher T. Penney       |  
-| Date:      | 2015-06-29 |  
-| Copyright: | Copyright © 2015 Fletcher T. Penney.    |  
-| Version:   | 0.2.0      |  
+| Date:      | 2017-06-08 |  
+| Copyright: | Copyright © 2015-2017 Fletcher T. Penney.    |  
+| Version:   | 0.2.1      |  
 
 
 ## Introduction ##
