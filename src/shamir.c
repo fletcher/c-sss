@@ -167,9 +167,6 @@ void Test_split_number(CuTest* tc) {
 
 	int * test = split_number(1234, 50, 20);
 
-	//printf("Split\n1: %d\n2: %d\n3: %d\n4: %d\n5: %d\n6: %d\n", *test, *(test+1), *(test+2),
-	//	*(test+3),*(test+4),*(test+5));
-
 	free(test);
 
 	CuAssertIntEquals(tc, 0, 0);
@@ -255,7 +252,6 @@ int join_shares(int *xy_pairs, int n) {
 				nextposition = xy_pairs[j*2];
 				numerator = (numerator * -nextposition) % prime;
 				denominator = (denominator * (startposition - nextposition)) % prime;
-				//fprintf(stderr, "Num: %lli\nDen: %lli\n", numerator, denominator);
 			}
 		}
 
@@ -331,13 +327,10 @@ char ** split_string(char * secret, int n, int t) {
 
 	for (i = 0; i < len; ++i)
 	{
-		// fprintf(stderr, "char %c: %d\n", secret[i], (unsigned char) secret[i]);
 		int letter = secret[i]; // - '0';
 
 		if (letter < 0)
 			letter = 256 + letter;
-
-		//fprintf(stderr, "char: '%c' int: '%d'\n", secret[i], letter);
 
 		int * chunks = split_number(letter, n, t);
 		int j;
@@ -353,8 +346,6 @@ char ** split_string(char * secret, int n, int t) {
 
 		free(chunks);
 	}
-
-	// fprintf(stderr, "%s\n", secret);
 
 	return shares;
 }
@@ -418,8 +409,6 @@ char * join_strings(char ** shares, int n) {
 		char letter = join_shares(chunks, n);
 
 		free(chunks);
-
-		// fprintf(stderr, "char %c: %d\n", letter, (unsigned char) letter);
 
 		sprintf(result + i, "%c",letter);
 	}
@@ -543,16 +532,6 @@ char * extract_secret_from_share_strings(const char * string) {
 	i++;
 
 	char * secret = join_strings(shares, i);
-
-
-/*
-	fprintf(stdout, "count: %d\n", i);
-
-	for (int j = 0; j < i; ++j)
-	{
-		fprintf(stderr, "'%s'\n", shares[j]);
-	}
-*/
 
 	free_string_shares(shares, i);
 
