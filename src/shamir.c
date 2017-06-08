@@ -71,16 +71,16 @@ static int prime = 257;
 
 unsigned long mix(unsigned long a, unsigned long b, unsigned long c)
 {
-    a=a-b;  a=a-c;  a=a^(c >> 13);
-    b=b-c;  b=b-a;  b=b^(a << 8);
-    c=c-a;  c=c-b;  c=c^(b >> 13);
-    a=a-b;  a=a-c;  a=a^(c >> 12);
-    b=b-c;  b=b-a;  b=b^(a << 16);
-    c=c-a;  c=c-b;  c=c^(b >> 5);
-    a=a-b;  a=a-c;  a=a^(c >> 3);
-    b=b-c;  b=b-a;  b=b^(a << 10);
-    c=c-a;  c=c-b;  c=c^(b >> 15);
-    return c;
+	a=a-b;  a=a-c;  a=a^(c >> 13);
+	b=b-c;  b=b-a;  b=b^(a << 8);
+	c=c-a;  c=c-b;  c=c^(b >> 13);
+	a=a-b;  a=a-c;  a=a^(c >> 12);
+	b=b-c;  b=b-a;  b=b^(a << 16);
+	c=c-a;  c=c-b;  c=c^(b >> 5);
+	a=a-b;  a=a-c;  a=a^(c >> 3);
+	b=b-c;  b=b-a;  b=b^(a << 10);
+	c=c-a;  c=c-b;  c=c^(b >> 15);
+	return c;
 }
 
 void seed_random(void) {
@@ -89,7 +89,7 @@ void seed_random(void) {
 }
 
 int nonzero_random(int modulo) {
-        int range = modulo - 1;
+	int range = modulo - 1;
 	/*-- use arc4random if available */
 #if defined (HAVE_ARC4RANDOM)
 	return arc4random_uniform(range) + 1;
@@ -106,14 +106,14 @@ int nonzero_random(int modulo) {
 
 int modular_exponentiation(int base,int exp,int mod)
 {
-    if (exp == 0)
-        return 1;
+	if (exp == 0)
+		return 1;
 	else if (exp%2 == 0) {
-        int mysqrt = modular_exponentiation(base, exp/2, mod);
-        return (mysqrt*mysqrt)%mod;
-    }
-    else
-        return (base * modular_exponentiation(base, exp-1, mod))%mod;
+		int mysqrt = modular_exponentiation(base, exp/2, mod);
+		return (mysqrt*mysqrt)%mod;
+	}
+	else
+		return (base * modular_exponentiation(base, exp-1, mod))%mod;
 }
 
 
