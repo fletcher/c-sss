@@ -241,15 +241,17 @@ int join_shares(int *xy_pairs, int n) {
 	int i;
 	int j;
 
+	// Pairwise calculations between all shares
 	for (i = 0; i < n; ++i)
 	{
 		numerator = 1;
 		denominator = 1;
+
 		for (j = 0; j < n; ++j)
 		{
 			if(i != j) {
-				startposition = xy_pairs[i*2];
-				nextposition = xy_pairs[j*2];
+				startposition = xy_pairs[i*2];		// x for share i
+				nextposition = xy_pairs[j*2];		// x for share j
 				numerator = (numerator * -nextposition) % prime;
 				denominator = (denominator * (startposition - nextposition)) % prime;
 			}
@@ -369,16 +371,18 @@ char * join_strings(char ** shares, int n) {
 	if (n == 0)
 		return NULL;
 
+	// `len` = number of hex pair values in shares
 	int len = (strlen(shares[0]) - 6) / 2;
 
 	char * result = malloc(len + 1);
 	char codon[3];
 	codon[2] = '\0';	// Must terminate the string!
 
-	int x[n];
-	int i;
-	int j;
+	int x[n];		// Integer value array
+	int i;			// Counter
+	int j;			// Counter
 
+	// Determine x value for each share
 	for (i = 0; i < n; ++i)
 	{
 		codon[0] = shares[i][0];
@@ -387,17 +391,21 @@ char * join_strings(char ** shares, int n) {
 		x[i] = strtol(codon, NULL, 16);
 	}
 
+	// Iterate through characters and calculate original secret
 	for (i = 0; i < len; ++i)
 	{
 		int *chunks = malloc(sizeof(int) * n  * 2);
 
+		// Collect all shares for character i
 		for (j = 0; j < n; ++j)
 		{
+			// Store x value for share
 			chunks[j*2] = x[j];
 
 			codon[0] = shares[j][6 + i * 2];
 			codon[1] = shares[j][6 + i * 2 + 1];
 
+			// Store y value for share
 			if (memcmp(codon,"G0",2) == 0) {
 				chunks[j*2 + 1] = 256;
 			} else {
