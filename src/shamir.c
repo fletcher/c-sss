@@ -88,15 +88,6 @@ void seed_random(void) {
 	srand(seed);
 }
 
-int nonzero_random(int modulo) {
-	int range = modulo - 1;
-	/*-- use arc4random if available */
-#if defined (HAVE_ARC4RANDOM)
-	return arc4random_uniform(range) + 1;
-#else
-	return rand() % range + 1;
-#endif
-}
 
 /*
 	from http://stackoverflow.com/questions/18730071/c-programming-to-calculate-using-modular-exponentiation
@@ -135,8 +126,12 @@ int * split_number(int number, int n, int t) {
 
 	for (i = 1; i < t; ++i)
 	{
-		/* prevent degraded polynomials by using non-zero random coefficients */
-		coef[i] = nonzero_random(prime - 1);
+        /* Generate random coefficients -- use arc4random if available */
+		#ifdef HAVE_ARC4RANDOM
+	        coef[i] = arc4random_uniform(prime);
+		#else
+	        coef[i] = rand() % (prime);
+		#endif
 	}
 
 	for (x = 0; x < n; ++x)
