@@ -4,10 +4,10 @@
 #include "strtok.h"
 
 #ifdef TEST
-#include "CuTest.h"
+	#include "CuTest.h"
 #endif
 
-/** 
+/**
 
 @file
 

@@ -58,29 +58,46 @@
 #include "shamir.h"
 
 
-static int prime = 257;	
+static int prime = 257;
 
 
 /*
 	http://stackoverflow.com/questions/322938/recommended-way-to-initialize-srand
 
 	http://www.concentric.net/~Ttwang/tech/inthash.htm
-	
+
 	Need a less predictable way to seed rand().
 */
 
-unsigned long mix(unsigned long a, unsigned long b, unsigned long c)
-{
-    a=a-b;  a=a-c;  a=a^(c >> 13);
-    b=b-c;  b=b-a;  b=b^(a << 8);
-    c=c-a;  c=c-b;  c=c^(b >> 13);
-    a=a-b;  a=a-c;  a=a^(c >> 12);
-    b=b-c;  b=b-a;  b=b^(a << 16);
-    c=c-a;  c=c-b;  c=c^(b >> 5);
-    a=a-b;  a=a-c;  a=a^(c >> 3);
-    b=b-c;  b=b-a;  b=b^(a << 10);
-    c=c-a;  c=c-b;  c=c^(b >> 15);
-    return c;
+unsigned long mix(unsigned long a, unsigned long b, unsigned long c) {
+	a = a - b;
+	a = a - c;
+	a = a ^ (c >> 13);
+	b = b - c;
+	b = b - a;
+	b = b ^ (a << 8);
+	c = c - a;
+	c = c - b;
+	c = c ^ (b >> 13);
+	a = a - b;
+	a = a - c;
+	a = a ^ (c >> 12);
+	b = b - c;
+	b = b - a;
+	b = b ^ (a << 16);
+	c = c - a;
+	c = c - b;
+	c = c ^ (b >> 5);
+	a = a - b;
+	a = a - c;
+	a = a ^ (c >> 3);
+	b = b - c;
+	b = b - a;
+	b = b ^ (a << 10);
+	c = c - a;
+	c = c - b;
+	c = c ^ (b >> 15);
+	return c;
 }
 
 void seed_random(void) {
@@ -88,15 +105,6 @@ void seed_random(void) {
 	srand(seed);
 }
 
-int nonzero_random(int modulo) {
-        int range = modulo - 1;
-	/*-- use arc4random if available */
-#if defined (HAVE_ARC4RANDOM)
-	return arc4random_uniform(range) + 1;
-#else
-	return rand() % range + 1;
-#endif
-}
 
 /*
 	from http://stackoverflow.com/questions/18730071/c-programming-to-calculate-using-modular-exponentiation
@@ -104,16 +112,15 @@ int nonzero_random(int modulo) {
 	Allows working with larger numbers (e.g. 255 shares, with a threshold of 200)
 */
 
-int modular_exponentiation(int base,int exp,int mod)
-{
-    if (exp == 0)
-        return 1;
-	else if (exp%2 == 0) {
-        int mysqrt = modular_exponentiation(base, exp/2, mod);
-        return (mysqrt*mysqrt)%mod;
-    }
-    else
-        return (base * modular_exponentiation(base, exp-1, mod))%mod;
+int modular_exponentiation(int base, int exp, int mod) {
+	if (exp == 0) {
+		return 1;
+	} else if (exp % 2 == 0) {
+		int mysqrt = modular_exponentiation(base, exp / 2, mod);
+		return (mysqrt * mysqrt) % mod;
+	} else {
+		return (base * modular_exponentiation(base, exp - 1, mod)) % mod;
+	}
 }
 
 
@@ -125,7 +132,7 @@ int modular_exponentiation(int base,int exp,int mod)
 */
 
 int * split_number(int number, int n, int t) {
-	int * shares = malloc(sizeof(int)*n);
+	int * shares = malloc(sizeof(int) * n);
 
 	int coef[t];
 	int x;
@@ -133,20 +140,21 @@ int * split_number(int number, int n, int t) {
 
 	coef[0] = number;
 
-	for (i = 1; i < t; ++i)
-	{
-		/* prevent degraded polynomials by using non-zero random coefficients */
-		coef[i] = nonzero_random(prime - 1);
+	for (i = 1; i < t; ++i) {
+		/* Generate random coefficients -- use arc4random if available */
+		#ifdef HAVE_ARC4RANDOM
+		coef[i] = arc4random_uniform(prime);
+		#else
+		coef[i] = rand() % (prime);
+		#endif
 	}
 
-	for (x = 0; x < n; ++x)
-	{
+	for (x = 0; x < n; ++x) {
 		int y = coef[0];
 
 		/* Calculate the shares */
-		for (i = 1; i < t; ++i)
-		{
-			int temp = modular_exponentiation(x+1, i, prime);
+		for (i = 1; i < t; ++i) {
+			int temp = modular_exponentiation(x + 1, i, prime);
 
 			y = (y + (coef[i] * temp % prime)) % prime;
 		}
@@ -167,9 +175,6 @@ void Test_split_number(CuTest* tc) {
 
 	int * test = split_number(1234, 50, 20);
 
-	//printf("Split\n1: %d\n2: %d\n3: %d\n4: %d\n5: %d\n6: %d\n", *test, *(test+1), *(test+2),
-	//	*(test+3),*(test+4),*(test+5));
-
 	free(test);
 
 	CuAssertIntEquals(tc, 0, 0);
@@ -189,13 +194,13 @@ int * gcdD(int a, int b) {
 		xyz[1] = 1;
 		xyz[2] = 0;
 	} else {
-		int n = floor(a/b);
+		int n = floor(a / b);
 		int c = a % b;
-		int *r = gcdD(b,c);
+		int *r = gcdD(b, c);
 
 		xyz[0] = r[0];
 		xyz[1] = r[2];
-		xyz[2] = r[1]-r[2]*n;
+		xyz[2] = r[1] - r[2] * n;
 
 		free(r);
 	}
@@ -215,7 +220,7 @@ int modInverse(int k) {
 	int * xyz;
 
 	if (k < 0) {
-		xyz = gcdD(prime,-k);
+		xyz = gcdD(prime, -k);
 		r = -xyz[2];
 	} else {
 		xyz = gcdD(prime, k);
@@ -244,18 +249,17 @@ int join_shares(int *xy_pairs, int n) {
 	int i;
 	int j;
 
-	for (i = 0; i < n; ++i)
-	{
+	// Pairwise calculations between all shares
+	for (i = 0; i < n; ++i) {
 		numerator = 1;
 		denominator = 1;
-		for (j = 0; j < n; ++j)
-		{
-			if(i != j) {
-				startposition = xy_pairs[i*2];
-				nextposition = xy_pairs[j*2];
+
+		for (j = 0; j < n; ++j) {
+			if (i != j) {
+				startposition = xy_pairs[i * 2];		// x for share i
+				nextposition = xy_pairs[j * 2];		// x for share j
 				numerator = (numerator * -nextposition) % prime;
 				denominator = (denominator * (startposition - nextposition)) % prime;
-				//fprintf(stderr, "Num: %lli\nDen: %lli\n", numerator, denominator);
 			}
 		}
 
@@ -276,20 +280,18 @@ void Test_join_shares(CuTest* tc) {
 	int n = 200;
 	int t = 100;
 
-	int shares[n*2];
+	int shares[n * 2];
 
 	int count = 255;	/* How many times should we test it? */
 	int j;
 
-	for (j = 0; j < count; ++j)
-	{
+	for (j = 0; j < count; ++j) {
 		int * test = split_number(j, n, t);
 		int i;
 
-		for (i = 0; i < n; ++i)
-		{
-			shares[i*2] = i + 1;
-			shares[i*2 + 1] = test[i];
+		for (i = 0; i < n; ++i) {
+			shares[i * 2] = i + 1;
+			shares[i * 2 + 1] = test[i];
 		}
 
 		/* Send all n shares */
@@ -314,47 +316,40 @@ char ** split_string(char * secret, int n, int t) {
 	char ** shares = malloc (sizeof(char *) * n);
 	int i;
 
-	for (i = 0; i < n; ++i)
-	{
+	for (i = 0; i < n; ++i) {
 		/* need two characters to encode each character */
 		/* Need 4 character overhead for share # and quorum # */
 		/* Additional 2 characters are for compatibility with:
-		
+
 			http://www.christophedavid.org/w/c/w.php/Calculators/ShamirSecretSharing
 		*/
-		shares[i] = (char *) malloc(2*len + 6 + 1);
+		shares[i] = (char *) malloc(2 * len + 6 + 1);
 
-		sprintf(shares[i], "%02X%02XAA",(i+1),t);
+		sprintf(shares[i], "%02X%02XAA", (i + 1), t);
 	}
 
 	/* Now, handle the secret */
 
-	for (i = 0; i < len; ++i)
-	{
-		// fprintf(stderr, "char %c: %d\n", secret[i], (unsigned char) secret[i]);
+	for (i = 0; i < len; ++i) {
 		int letter = secret[i]; // - '0';
 
-		if (letter < 0)
+		if (letter < 0) {
 			letter = 256 + letter;
-
-		//fprintf(stderr, "char: '%c' int: '%d'\n", secret[i], letter);
+		}
 
 		int * chunks = split_number(letter, n, t);
 		int j;
 
-		for (j = 0; j < n; ++j)
-		{
+		for (j = 0; j < n; ++j) {
 			if (chunks[j] == 256) {
-				sprintf(shares[j] + 6+ i * 2, "G0");	/* Fake code */
+				sprintf(shares[j] + 6 + i * 2, "G0");	/* Fake code */
 			} else {
-				sprintf(shares[j] + 6 + i * 2, "%02X", chunks[j]);				
+				sprintf(shares[j] + 6 + i * 2, "%02X", chunks[j]);
 			}
 		}
 
 		free(chunks);
 	}
-
-	// fprintf(stderr, "%s\n", secret);
 
 	return shares;
 }
@@ -363,8 +358,7 @@ char ** split_string(char * secret, int n, int t) {
 void free_string_shares(char ** shares, int n) {
 	int i;
 
-	for (i = 0; i < n; ++i)
-	{
+	for (i = 0; i < n; ++i) {
 		free(shares[i]);
 	}
 
@@ -375,42 +369,46 @@ void free_string_shares(char ** shares, int n) {
 char * join_strings(char ** shares, int n) {
 	/* TODO: Check if we have a quorum */
 
-	if (n == 0)
+	if (n == 0) {
 		return NULL;
+	}
 
+	// `len` = number of hex pair values in shares
 	int len = (strlen(shares[0]) - 6) / 2;
 
 	char * result = malloc(len + 1);
 	char codon[3];
 	codon[2] = '\0';	// Must terminate the string!
 
-	int x[n];
-	int i;
-	int j;
+	int x[n];		// Integer value array
+	int i;			// Counter
+	int j;			// Counter
 
-	for (i = 0; i < n; ++i)
-	{
+	// Determine x value for each share
+	for (i = 0; i < n; ++i) {
 		codon[0] = shares[i][0];
 		codon[1] = shares[i][1];
 
 		x[i] = strtol(codon, NULL, 16);
 	}
 
-	for (i = 0; i < len; ++i)
-	{
+	// Iterate through characters and calculate original secret
+	for (i = 0; i < len; ++i) {
 		int *chunks = malloc(sizeof(int) * n  * 2);
 
-		for (j = 0; j < n; ++j)
-		{
-			chunks[j*2] = x[j];
+		// Collect all shares for character i
+		for (j = 0; j < n; ++j) {
+			// Store x value for share
+			chunks[j * 2] = x[j];
 
 			codon[0] = shares[j][6 + i * 2];
 			codon[1] = shares[j][6 + i * 2 + 1];
 
-			if (memcmp(codon,"G0",2) == 0) {
-				chunks[j*2 + 1] = 256;
+			// Store y value for share
+			if (memcmp(codon, "G0", 2) == 0) {
+				chunks[j * 2 + 1] = 256;
 			} else {
-				chunks[j*2 + 1] = strtol(codon, NULL, 16);
+				chunks[j * 2 + 1] = strtol(codon, NULL, 16);
 			}
 		}
 
@@ -419,9 +417,7 @@ char * join_strings(char ** shares, int n) {
 
 		free(chunks);
 
-		// fprintf(stderr, "char %c: %d\n", letter, (unsigned char) letter);
-
-		sprintf(result + i, "%c",letter);
+		sprintf(result + i, "%c", letter);
 	}
 
 	return result;
@@ -438,8 +434,7 @@ void Test_split_string(CuTest* tc) {
 	int count = 10;
 	int i;
 
-	for (i = 0; i < count; ++i)
-	{
+	for (i = 0; i < count; ++i) {
 		char ** result = split_string(phrase, n, t);
 
 		/* Extract secret using first t shares */
@@ -465,15 +460,14 @@ void Test_split_string(CuTest* tc) {
 
 char * generate_share_strings(char * secret, int n, int t) {
 	char ** result = split_string(secret, n, t);
-	
+
 	int len = strlen(secret);
 	int key_len = 6 + 2 * len + 1;
 	int i;
 
 	char * shares = malloc(key_len * n + 1);
 
-	for (i = 0; i < n; ++i)
-	{
+	for (i = 0; i < n; ++i) {
 		sprintf(shares + i * key_len, "%s\n", result[i]);
 	}
 
@@ -486,19 +480,21 @@ char * generate_share_strings(char * secret, int n, int t) {
 /* Trim spaces at end of string */
 void trim_trailing_whitespace(char *str) {
 	unsigned long l;
-	
-	if (str == NULL)
+
+	if (str == NULL) {
 		return;
-	
+	}
+
 	l = strlen(str);
-	
-	if (l < 1)
+
+	if (l < 1) {
 		return;
-	
+	}
+
 	while ( (l > 0) && (( str[l - 1] == ' ' ) ||
-		( str[l - 1] == '\n' ) || 
-		( str[l - 1] == '\r' ) || 
-		( str[l - 1] == '\t' )) ) {
+	                    ( str[l - 1] == '\n' ) ||
+	                    ( str[l - 1] == '\r' ) ||
+	                    ( str[l - 1] == '\t' )) ) {
 		str[l - 1] = '\0';
 		l = strlen(str);
 	}
@@ -543,16 +539,6 @@ char * extract_secret_from_share_strings(const char * string) {
 	i++;
 
 	char * secret = join_strings(shares, i);
-
-
-/*
-	fprintf(stdout, "count: %d\n", i);
-
-	for (int j = 0; j < i; ++j)
-	{
-		fprintf(stderr, "'%s'\n", shares[j]);
-	}
-*/
 
 	free_string_shares(shares, i);
 
