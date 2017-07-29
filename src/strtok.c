@@ -1,4 +1,4 @@
-/* 
+/*
  * public domain strtok_r() by Charlie Gordon
  *
  *   from comp.lang.c  9/14/2007
@@ -19,38 +19,34 @@
 #include "strtok.h"
 
 char* strtok_rr(
-    char *str, 
-    const char *delim, 
-    char **nextp)
-{
-    char *ret;
+    char *str,
+    const char *delim,
+    char **nextp) {
+	char *ret;
 
-    if (str == NULL)
-    {
-        str = *nextp;
-    }
+	if (str == NULL) {
+		str = *nextp;
+	}
 
 	if (str == NULL) {
 		return NULL;
 	}
 
-    str += strspn(str, delim);
+	str += strspn(str, delim);
 
-    if (*str == '\0')
-    {
-        return NULL;
-    }
+	if (*str == '\0') {
+		return NULL;
+	}
 
-    ret = str;
+	ret = str;
 
-    str += strcspn(str, delim);
+	str += strcspn(str, delim);
 
-    if (*str)
-    {
-        *str++ = '\0';
-    }
+	if (*str) {
+		*str++ = '\0';
+	}
 
-    *nextp = str;
+	*nextp = str;
 
-    return ret;
+	return ret;
 }

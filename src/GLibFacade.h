@@ -1,7 +1,7 @@
 /*
  *	GLibFacade.h
  *	MultiMarkdown
- *	
+ *
  *		https://github.com/fletcher/MultiMarkdown-4/
  *
  *	Created by Daniel Jalkut on 7/26/11.
@@ -27,17 +27,16 @@ typedef char gchar;
 #define TRUE true
 
 /** @brief Minimal replacement for GLib's GString class.
- *  
  *
- * WE implement minimal mirror implementations of GLib's GString and GSList 
+ *
+ * WE implement minimal mirror implementations of GLib's GString and GSList
  * sufficient to cover the functionality required by MultiMarkdown.
  *
- * NOTE: THese are 100% clean, from-scratch implementations using only the 
+ * NOTE: THese are 100% clean, from-scratch implementations using only the
  * GLib function prototype as guide for behavior.
  */
 
-typedef struct 
-{	
+typedef struct {
 	/* Current UTF8 byte stream this string represents */
 	char* str;
 
@@ -59,9 +58,8 @@ void g_string_append_printf(GString* baseString, char* format, ...);
 
 /* Just implement a very simple singly linked list. */
 
-typedef struct _GSList
-{
-	void* data;	
+typedef struct _GSList {
+	void* data;
 	struct _GSList* next;
 } GSList;
 

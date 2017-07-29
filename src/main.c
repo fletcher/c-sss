@@ -42,8 +42,9 @@ char * stdin_buffer() {
 	char curchar;
 	char * result;
 
-	while ((curchar = fgetc(stdin)) != EOF)
+	while ((curchar = fgetc(stdin)) != EOF) {
 		g_string_append_c(buffer, curchar);
+	}
 
 	fclose(stdin);
 
@@ -56,11 +57,11 @@ char * stdin_buffer() {
 
 
 int main( int argc, char** argv ) {
-	
+
 	seed_random();
 
 	if (argc == 4) {
-		// Create shares -- "secret"  n  t 
+		// Create shares -- "secret"  n  t
 
 		char * secret = argv[1];
 
