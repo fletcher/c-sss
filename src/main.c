@@ -29,30 +29,53 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "GLibFacade.h"
+#include "d_string.h"
 
 #include "shamir.h"
 
 
-char * stdin_buffer() {
-	/* Read from stdin and return a char *
-		`result` will need to be freed elsewhere */
+#define kBUFFERSIZE 4096	// How many bytes to read at a time
 
-	GString * buffer = g_string_new("");
-	char curchar;
-	char * result;
+DString * stdin_buffer() {
+	/* Read from stdin and return a GString *
+		`buffer` will need to be freed elsewhere */
 
-	while ((curchar = fgetc(stdin)) != EOF) {
-		g_string_append_c(buffer, curchar);
+	char chunk[kBUFFERSIZE];
+	size_t bytes;
+
+	DString * buffer = d_string_new("");
+
+	while ((bytes = fread(chunk, 1, kBUFFERSIZE, stdin)) > 0) {
+		d_string_append_c_array(buffer, chunk, bytes);
 	}
 
 	fclose(stdin);
 
-	result = buffer->str;
+	return buffer;
+}
 
-	g_string_free(buffer, false);
+DString * scan_file(char * fname) {
+	/* Read from stdin and return a GString *
+		`buffer` will need to be freed elsewhere */
 
-	return result;
+	char chunk[kBUFFERSIZE];
+	size_t bytes;
+
+	FILE * file;
+
+	if ((file = fopen(fname, "r")) == NULL ) {
+		return NULL;
+	}
+
+	DString * buffer = d_string_new("");
+
+	while ((bytes = fread(chunk, 1, kBUFFERSIZE, file)) > 0) {
+		d_string_append_c_array(buffer, chunk, bytes);
+	}
+
+	fclose(file);
+
+	return buffer;
 }
 
 
@@ -76,29 +99,29 @@ int main( int argc, char** argv ) {
 		free(shares);
 	} else if (argc == 3) {
 		// Read secret from stdin -- n t < cat secret.txt
-		char * secret = stdin_buffer();
+		DString * secret = stdin_buffer();
 
 		int n = atoi(argv[1]);
 
 		int t = atoi(argv[2]);
 
-		char * shares = generate_share_strings(secret, n, t);
+		char * shares = generate_share_strings(secret->str, n, t);
 
 		fprintf(stdout, "%s\n", shares);
 
 		free(shares);
-		free(secret);
+		d_string_free(secret, true);
 	} else {
 		// Read shares from stdin -- < shares.txt
-		char * shares = stdin_buffer();
+		DString * shares = stdin_buffer();
 
-		char * secret = extract_secret_from_share_strings(shares);
+		char * secret = extract_secret_from_share_strings(shares->str);
 
 		fprintf(stdout, "%s\n", secret);
 
 		free(secret);
 
-		free(shares);
+		d_string_free(shares, true);
 	}
 
 }

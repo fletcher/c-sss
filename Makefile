@@ -1,4 +1,6 @@
 BUILD_DIR = build
+XCODE_BUILD_DIR = build-xcode
+XCODE_DEBUG_BUILD_DIR = build-xcode-debug
 
 # The release target will perform additional optimization
 .PHONY : release
@@ -32,14 +34,14 @@ analyze: $(BUILD_DIR)
 #	xcodebuild -configuration Debug
 #	xcodebuild -configuration Release
 .PHONY : xcode
-xcode: $(BUILD_DIR)
-	cd $(BUILD_DIR); \
-	cmake -G Xcode -DCMAKE_BUILD_TYPE=Release ..
+xcode: $(XCODE_BUILD_DIR)
+	cd $(XCODE_BUILD_DIR); \
+	cmake -G Xcode ..
 
-# Xcode for iOS
-ios: $(BUILD_DIR)
-	cd $(BUILD_DIR); \
-	cmake -G Xcode -DCMAKE_TOOLCHAIN_FILE=../tools/iOS.cmake -DCMAKE_BUILD_TYPE=Release ..
+.PHONY : xcode-debug
+xcode-debug: $(XCODE_DEBUG_BUILD_DIR)
+	cd $(XCODE_DEBUG_BUILD_DIR); \
+	cmake -G Xcode -DTEST=1 ..
 
 # Cross-compile for Windows using MinGW on *nix
 .PHONY : windows
@@ -75,13 +77,35 @@ documentation: $(BUILD_DIR)
 	cd documentation; rm -rf *; \
 	cd ../build; cp -r documentation/html/* ../documentation;
 
+.PHONY : gh-pages
+gh-pages: documentation
+	cp -r $(BUILD_DIR)/documentation/html/* documentation/
+
 # Clean out the build directory
 .PHONY : clean
 clean:
 	rm -rf $(BUILD_DIR)/*
 
 # Create build directory if it doesn't exist
-$(BUILD_DIR):
+$(BUILD_DIR): CHANGELOG
 	-mkdir $(BUILD_DIR) 2>/dev/null
 	-cd $(BUILD_DIR); rm -rf *
 
+# Build xcode directories if they don't exist
+$(XCODE_BUILD_DIR):
+	-mkdir $(XCODE_BUILD_DIR) 2>/dev/null
+	-cd $(XCODE_BUILD_DIR); rm -rf *
+
+$(XCODE_DEBUG_BUILD_DIR):
+	-mkdir $(XCODE_DEBUG_BUILD_DIR) 2>/dev/null
+	-cd $(XCODE_DEBUG_BUILD_DIR); rm -rf *
+
+# Generate a list of changes since last commit to 'master' branch
+.PHONY : CHANGELOG
+CHANGELOG:
+	git log master..develop --format="*    %s" | sort | uniq > CHANGELOG-UNRELEASED
+
+# Use astyle
+.PHONY : astyle
+astyle:
+	astyle --options=.astylerc "src/*.c" "src/*.h"

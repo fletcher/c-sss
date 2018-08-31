@@ -492,9 +492,9 @@ void trim_trailing_whitespace(char *str) {
 	}
 
 	while ( (l > 0) && (( str[l - 1] == ' ' ) ||
-	                    ( str[l - 1] == '\n' ) ||
-	                    ( str[l - 1] == '\r' ) ||
-	                    ( str[l - 1] == '\t' )) ) {
+						( str[l - 1] == '\n' ) ||
+						( str[l - 1] == '\r' ) ||
+						( str[l - 1] == '\t' )) ) {
 		str[l - 1] = '\0';
 		l = strlen(str);
 	}
@@ -542,7 +542,7 @@ char * extract_secret_from_share_strings(const char * string) {
 
 	free_string_shares(shares, i);
 	free(temp_string);
-	
+
 	return secret;
 }
 
@@ -553,7 +553,7 @@ void Test_extract_secret_from_share_strings(CuTest* tc) {
 
 	char * secret = extract_secret_from_share_strings(shares);
 
-	CuAssertStrEquals(tc,"secret",secret);
+	CuAssertStrEquals(tc, "secret", secret);
 
 	free(secret);
 }
