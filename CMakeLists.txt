@@ -8,10 +8,10 @@ cmake_minimum_required (VERSION 2.6)
 set (My_Project_Title "c-SSS")
 set (My_Project_Description "Implementation of Shamir's Secret Sharing in C.")
 set (My_Project_Author "Fletcher T. Penney")
-set (My_Project_Revised_Date "2017-07-29")
+set (My_Project_Revised_Date "2018-08-31")
 set (My_Project_Version_Major 0)
 set (My_Project_Version_Minor 2)
-set (My_Project_Version_Patch 2)
+set (My_Project_Version_Patch 3)
 
 set (My_Project_Version "${My_Project_Version_Major}.${My_Project_Version_Minor}.${My_Project_Version_Patch}")
 

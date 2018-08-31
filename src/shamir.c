@@ -541,6 +541,20 @@ char * extract_secret_from_share_strings(const char * string) {
 	char * secret = join_strings(shares, i);
 
 	free_string_shares(shares, i);
-
+	free(temp_string);
+	
 	return secret;
 }
+
+
+#ifdef TEST
+void Test_extract_secret_from_share_strings(CuTest* tc) {
+	char * shares = "0103AAFEBDB7A3F114\n0203AA1F407C51B784\n0303AAD9F0B37DB8C3\n0403AA29CB5B26F4D1\n0503AA11D2754D6AAE\n0603AA910400F21B5A\n0703AAA863FE1307D6\n0803AA56EE6CB32E20\n0903AA9CA44CD0903A\n0A03AA79869E6A2C23\n";
+
+	char * secret = extract_secret_from_share_strings(shares);
+
+	CuAssertStrEquals(tc,"secret",secret);
+
+	free(secret);
+}
+#endif
