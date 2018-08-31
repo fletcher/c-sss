@@ -11,23 +11,112 @@ set (My_Project_Author "Fletcher T. Penney")
 set (My_Project_Revised_Date "2018-08-31")
 set (My_Project_Version_Major 0)
 set (My_Project_Version_Minor 2)
-set (My_Project_Version_Patch 3)
+set (My_Project_Version_Patch 4)
 
 set (My_Project_Version "${My_Project_Version_Major}.${My_Project_Version_Minor}.${My_Project_Version_Patch}")
 
-set (My_Project_Copyright_Date "2015-2017")
+set (My_Project_Copyright_Date "2015-2018")
 set (My_Project_Copyright "Copyright © ${My_Project_Copyright_Date} ${My_Project_Author}.")
+
+string(TOUPPER ${My_Project_Title} My_Project_Title_Caps  )
+string(REGEX REPLACE " " "_" My_Project_Title_Caps ${My_Project_Title_Caps} )
 
 project (${My_Project_Title})
 
+
+# =========================
+# Build Submodules (if any)
+# =========================
+
+# add_subdirectory(submodules/foo)
+
+
+# =================
+# Configure Project
+# =================
 
 # Search for included files here
 include_directories( ${PROJECT_SOURCE_DIR}/src )
 include_directories( ${PROJECT_SOURCE_DIR}/test )
 include_directories(${PROJECT_BINARY_DIR})
 
-string(TOUPPER ${My_Project_Title} My_Project_Title_Caps  )
-string(REGEX REPLACE " " "_" My_Project_Title_Caps ${My_Project_Title_Caps} )
+
+# =================
+# Macro Definitions
+# =================
+
+MACRO(ADD_PUBLIC_HEADER target filename)
+	# Add filename to public_header_files list, flag it as 
+	# public header for libraries and OS X Frameworks
+
+	# This will work for creating one library/framework with public headers
+	# per project. If you need more than one, you will need to customize
+	# the workflow as appropriate, since there is only one 
+	# public_header_files list.
+
+	# SET_TARGET_PROPERTIES(${target} PROPERTIES PUBLIC_HEADER ${filename})
+
+	LIST(APPEND public_header_files ${filename})
+
+	SET_SOURCE_FILES_PROPERTIES(
+		${filename}
+		PROPERTIES
+		MACOSX_PACKAGE_LOCATION
+		include/\${PRODUCT_NAME}
+	)
+
+	# Set Xcode project to configure public header location to allow
+	# use when this project is used in another workspace.
+	# NOTE: You must manually add a "Headers" build phase and add
+	# the desired public headers to that list for Xcode to use them.
+	#
+	# TODO: If anyone knows how to automate that in Cmake, I would be very
+	# grateful!!
+
+	SET_TARGET_PROPERTIES(${target} PROPERTIES
+		XCODE_ATTRIBUTE_PUBLIC_HEADERS_FOLDER_PATH
+		"include/$(TARGET_NAME)"
+	)
+
+	SET_TARGET_PROPERTIES(${target} PROPERTIES
+		XCODE_ATTRIBUTE_PRIVATE_HEADERS_FOLDER_PATH
+		"$(PUBLIC_HEADERS_FOLDER_PATH)/Private"
+	)
+	
+	# Set Xcode target to include settings for OS X and iOS
+	
+	SET_TARGET_PROPERTIES(${target} PROPERTIES
+		XCODE_ATTRIBUTE_SUPPORTED_PLATFORMS
+		"macos iphonesimulator iphoneos"
+	)
+
+	SET_TARGET_PROPERTIES(${target} PROPERTIES
+		XCODE_ATTRIBUTE_VALID_ARCHITECTURES
+		"x86_64 i386 armv6 armv7 armv7s arm64"
+	)
+
+ENDMACRO(ADD_PUBLIC_HEADER)
+
+
+# The target should be an OS X Bundle with a PList
+
+MACRO(MAKE_TARGET_BUNDLE targetname)
+
+	set_target_properties(
+		${targetname}
+		PROPERTIES
+		MACOSX_BUNDLE_INFO_PLIST
+		${PROJECT_SOURCE_DIR}/templates/plist.in
+	)
+
+ENDMACRO(MAKE_TARGET_BUNDLE)
+
+
+MACRO(ADD_LINKED_FRAMEWORK frame)
+
+	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGES} -framework ${frame}")
+
+ENDMACRO(ADD_LINKED_FRAMEWORK)
 
 
 # ======================
@@ -36,7 +125,11 @@ string(REGEX REPLACE " " "_" My_Project_Title_Caps ${My_Project_Title_Caps} )
 
 file(READ ${PROJECT_SOURCE_DIR}/LICENSE.txt My_Project_License)
 
-# string(REGEX REPLACE "\n" "\n\t" My_Project_License_Indent ${My_Project_License})
+string(REGEX REPLACE "\n" "\n\t" My_Project_License_Indented ${My_Project_License})
+
+string(REGEX REPLACE "\"" "\\\\\"" My_Project_License_Escaped ${My_Project_License_Indented})
+
+string(REGEX REPLACE "\n" "\\\\n\"\\\\\n\"" My_Project_License_Literal ${My_Project_License_Escaped})
 
 configure_file (
 	"${PROJECT_SOURCE_DIR}/templates/template.c.in"
@@ -77,9 +170,14 @@ set(src_files
 	src/shamir.c
 )
 
-# primary header files
+# Primary header files, also for doxygen documentation
 set(header_files
 	src/shamir.h
+)
+
+# Public headers, will be installed in 'include'
+# Do not manually add files here, use the ADD_PUBLIC_HEADER() macro
+set(public_header_files
 )
 
 # Utility source files will not be included in doxygen
@@ -89,6 +187,9 @@ set(src_utility_files
 
 set(header_utility_files
 	src/strtok.h
+)
+
+set(header_utility_files
 	${PROJECT_BINARY_DIR}/version.h
 )
 
@@ -107,8 +208,8 @@ SET_TARGET_PROPERTIES(libShamir PROPERTIES PREFIX "")
 if (NOT DEFINED TEST)
 	add_executable(shamir
 		src/main.c
-		src/GLibFacade.c
-		src/GLibFacade.h
+		src/d_string.c
+		src/d_string.h
 		${header_files}
 	)
 	
@@ -130,42 +231,47 @@ configure_file (
 # Build Test Suite with CuTest (unit testing)
 # ===========================================
 
-set(test_files
-	test/CuTest.c
-	test/CuTest.h
-	${PROJECT_BINARY_DIR}/AllTests.c
-)
+# from http://stackoverflow.com/questions/25199677/how-to-detect-if-current-scope-has-a-parent-in-cmake
+get_directory_property(hasParent PARENT_DIRECTORY)
 
-if (DEFINED TEST)
-	add_definitions(-DTEST)
 
-	add_executable(run_tests
-		${test_files}
-		${src_files}
-		${src_utility_files}
-		${header_files}
-		${header_utility_files}
+if(hasParent)
+	# Don't create "run_tests" when we're a sub-project for something else
+else()
+	set(test_files
+		test/CuTest.c
+		test/CuTest.h
+		${PROJECT_BINARY_DIR}/AllTests.c
 	)
 
-	# On some systems, need to specifically link m
-	target_link_libraries(run_tests m)
+	if (DEFINED TEST)
+		add_definitions(-DTEST)
 
-	# Process source files to look for tests to run
-	add_custom_command (
-		OUTPUT ${PROJECT_BINARY_DIR}/AllTests.c
-		COMMAND sh ${PROJECT_SOURCE_DIR}/test/make-tests.sh ${PROJECT_SOURCE_DIR}/src/*.c > ${PROJECT_BINARY_DIR}/AllTests.c
-	)
+		add_executable(run_tests
+			${test_files}
+			${src_files}
+			${header_files}
+			${src_utility_files}
+			${header_utility_files}
+		)
 
-	enable_testing()
+		# Process source files to look for tests to run
+		add_custom_command (
+			OUTPUT ${PROJECT_BINARY_DIR}/AllTests.c
+			COMMAND bash ${PROJECT_SOURCE_DIR}/test/make-tests.sh ${PROJECT_SOURCE_DIR}/src/*.c > ${PROJECT_BINARY_DIR}/AllTests.c
+		)
 
-	add_test( test ${PROJECT_BINARY_DIR}/run_tests)
+		enable_testing()
 
-	# valgrind memory testing
-	find_program (MEMORYCHECK_COMMAND valgrind)
-	SET (MEMORYCHECK_COMMAND_OPTIONS --leak-check=full --error-exitcode=1)
+		add_test( test ${PROJECT_BINARY_DIR}/run_tests)
 
-	add_test( memory_test ${MEMORYCHECK_COMMAND} ${MEMORYCHECK_COMMAND_OPTIONS} ${PROJECT_BINARY_DIR}/run_tests)
+		# valgrind memory testing
+		find_program (MEMORYCHECK_COMMAND valgrind)
+		SET (MEMORYCHECK_COMMAND_OPTIONS --leak-check=full --error-exitcode=1)
 
+		add_test( memory_test ${MEMORYCHECK_COMMAND} ${MEMORYCHECK_COMMAND_OPTIONS} ${PROJECT_BINARY_DIR}/run_tests)
+
+	endif()
 endif()
 
 
@@ -178,6 +284,7 @@ if (APPLE)
 
 	# Configure backwards-compatible support (if your project allows it)
 	SET(CMAKE_OSX_DEPLOYMENT_TARGET "10.4" CACHE STRING "Deployment target for OSX" FORCE)
+	SET(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "10.0" CACHE STRING "Deployment target for iOS" FORCE)
 
 	# Compile for x86_64 and i386.  ppc no longer supported
 	if(CMAKE_BUILD_TYPE MATCHES "Release")
@@ -244,22 +351,27 @@ endif (WIN32)
 # ==============
 
 # Create a library?
-# add_library(libFOO STATIC
-#	${src_files}
-#	${src_utility_files}
-#	${header_files}
-#	${header_utility_files}
-# )
+add_library(libFOO STATIC
+	${src_files}
+	${src_utility_files}
+	${header_files}
+	${header_utility_files}
+)
 
 # remove the extra "lib" from "liblibFOO"
-# SET_TARGET_PROPERTIES(libFOO PROPERTIES PREFIX "")
+SET_TARGET_PROPERTIES(libFOO PROPERTIES
+	PREFIX ""
+	FRAMEWORK TRUE
+	FRAMEWORK_VERSION A
+	MACOSX_FRAMEWORK_IDENTIFIER net.fletcherpenney.c-template
+)
 
 # Create a command-line app?
 # if (NOT DEFINED TEST)
 # 	add_executable(main
 # 		src/main.c
-# 		src/GLibFacade.c
-# 		src/GLibFacade.h
+# 		src/d_string.c
+# 		src/d_string.h
 # 		${header_files}
 # 	)
 # 
@@ -304,6 +416,7 @@ else (APPLE)
 endif (APPLE)
 
 # Use some default install locations (if appropriate)
+set(CPACK_SET_DESTDIR true)
 if (WIN32)
 	set (CPACK_INSTALL_PREFIX "")
 	set (CPACK_NSIS_MODIFY_PATH ON)

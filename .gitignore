@@ -1,4 +1,6 @@
 .DS_Store
+CHANGELOG-UNRELEASED
+documentation
 
 # Developer Tools
 *.pbxuser
@@ -16,5 +18,8 @@ profile
 *.moved-aside
 DerivedData
 .idea/
+
+build-xcode
+build-xcode-debug
 
 *.orig
