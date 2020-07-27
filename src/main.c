@@ -79,7 +79,7 @@ DString * scan_file(char * fname) {
 }
 
 
-int main( int argc, char** argv ) {
+int main( int argc, char ** argv ) {
 
 	seed_random();
 

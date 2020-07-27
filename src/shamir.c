@@ -142,11 +142,11 @@ int * split_number(int number, int n, int t) {
 
 	for (i = 1; i < t; ++i) {
 		/* Generate random coefficients -- use arc4random if available */
-		#ifdef HAVE_ARC4RANDOM
+#ifdef HAVE_ARC4RANDOM
 		coef[i] = arc4random_uniform(prime);
-		#else
+#else
 		coef[i] = rand() % (prime);
-		#endif
+#endif
 	}
 
 	for (x = 0; x < n; ++x) {
@@ -171,7 +171,7 @@ int * split_number(int number, int n, int t) {
 }
 
 #ifdef TEST
-void Test_split_number(CuTest* tc) {
+void Test_split_number(CuTest * tc) {
 
 	seed_random();
 
@@ -198,7 +198,7 @@ int * gcdD(int a, int b) {
 	} else {
 		int n = floor(a / b);
 		int c = a % b;
-		int *r = gcdD(b, c);
+		int * r = gcdD(b, c);
 
 		xyz[0] = r[0];
 		xyz[1] = r[2];
@@ -241,7 +241,7 @@ int modInverse(int k) {
 	n is number of pairs submitted
 */
 
-int join_shares(int *xy_pairs, int n) {
+int join_shares(int * xy_pairs, int n) {
 	int secret = 0;
 	long numerator;
 	long denominator;
@@ -278,7 +278,7 @@ int join_shares(int *xy_pairs, int n) {
 
 
 #ifdef TEST
-void Test_join_shares(CuTest* tc) {
+void Test_join_shares(CuTest * tc) {
 	int n = 200;
 	int t = 100;
 
@@ -401,7 +401,7 @@ char * join_strings(char ** shares, int n) {
 
 	// Iterate through characters and calculate original secret
 	for (i = 0; i < len; ++i) {
-		int *chunks = malloc(sizeof(int) * n  * 2);
+		int * chunks = malloc(sizeof(int) * n  * 2);
 
 		// Collect all shares for character i
 		for (j = 0; j < n; ++j) {
@@ -432,7 +432,7 @@ char * join_strings(char ** shares, int n) {
 
 
 #ifdef TEST
-void Test_split_string(CuTest* tc) {
+void Test_split_string(CuTest * tc) {
 	int n = 255;	/* Maximum n = 255 */
 	int t = 254;	/* t <= n, we choose less than that so we have two tests */
 
@@ -485,7 +485,7 @@ char * generate_share_strings(char * secret, int n, int t) {
 
 
 /* Trim spaces at end of string */
-void trim_trailing_whitespace(char *str) {
+void trim_trailing_whitespace(char * str) {
 	unsigned long l;
 
 	if (str == NULL) {
@@ -555,7 +555,7 @@ char * extract_secret_from_share_strings(const char * string) {
 
 
 #ifdef TEST
-void Test_extract_secret_from_share_strings(CuTest* tc) {
+void Test_extract_secret_from_share_strings(CuTest * tc) {
 	char * shares = "0103AAFEBDB7A3F114\n0203AA1F407C51B784\n0303AAD9F0B37DB8C3\n0403AA29CB5B26F4D1\n0503AA11D2754D6AAE\n0603AA910400F21B5A\n0703AAA863FE1307D6\n0803AA56EE6CB32E20\n0903AA9CA44CD0903A\n0A03AA79869E6A2C23\n";
 
 	char * secret = extract_secret_from_share_strings(shares);
