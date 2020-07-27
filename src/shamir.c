@@ -134,7 +134,7 @@ int modular_exponentiation(int base, int exp, int mod) {
 int * split_number(int number, int n, int t) {
 	int * shares = malloc(sizeof(int) * n);
 
-	int coef[t];
+	int * coef = malloc(sizeof(int) * t);
 	int x;
 	int i;
 
@@ -164,6 +164,8 @@ int * split_number(int number, int n, int t) {
 
 		shares[x] = y;
 	}
+
+	free(coef);
 
 	return shares;
 }
@@ -369,7 +371,7 @@ void free_string_shares(char ** shares, int n) {
 char * join_strings(char ** shares, int n) {
 	/* TODO: Check if we have a quorum */
 
-	if (n == 0) {
+	if ((n == 0) || (shares == NULL) || (shares[0] == NULL)) {
 		return NULL;
 	}
 
@@ -386,6 +388,11 @@ char * join_strings(char ** shares, int n) {
 
 	// Determine x value for each share
 	for (i = 0; i < n; ++i) {
+		if (shares[i] == NULL) {
+			free(result);
+			return NULL;
+		}
+
 		codon[0] = shares[i][0];
 		codon[1] = shares[i][1];
 
