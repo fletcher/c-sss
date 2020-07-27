@@ -241,6 +241,8 @@ else()
 	set(test_files
 		test/CuTest.c
 		test/CuTest.h
+		src/d_string.c
+		src/d_string.h
 		${PROJECT_BINARY_DIR}/AllTests.c
 	)
 
