@@ -18,11 +18,11 @@
 
 #include "strtok.h"
 
-char* strtok_rr(
-	char *str,
-	const char *delim,
-	char **nextp) {
-	char *ret;
+char * strtok_rr(
+	char * str,
+	const char * delim,
+	char ** nextp) {
+	char * ret;
 
 	if (str == NULL) {
 		str = *nextp;

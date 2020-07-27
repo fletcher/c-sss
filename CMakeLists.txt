@@ -8,14 +8,14 @@ cmake_minimum_required (VERSION 2.6)
 set (My_Project_Title "c-SSS")
 set (My_Project_Description "Implementation of Shamir's Secret Sharing in C.")
 set (My_Project_Author "Fletcher T. Penney")
-set (My_Project_Revised_Date "2018-08-31")
+set (My_Project_Revised_Date "2020-07-27")
 set (My_Project_Version_Major 0)
 set (My_Project_Version_Minor 2)
-set (My_Project_Version_Patch 4)
+set (My_Project_Version_Patch 5)
 
 set (My_Project_Version "${My_Project_Version_Major}.${My_Project_Version_Minor}.${My_Project_Version_Patch}")
 
-set (My_Project_Copyright_Date "2015-2018")
+set (My_Project_Copyright_Date "2015-2018, 2020")
 set (My_Project_Copyright "Copyright © ${My_Project_Copyright_Date} ${My_Project_Author}.")
 
 string(TOUPPER ${My_Project_Title} My_Project_Title_Caps  )
@@ -241,6 +241,8 @@ else()
 	set(test_files
 		test/CuTest.c
 		test/CuTest.h
+		src/d_string.c
+		src/d_string.h
 		${PROJECT_BINARY_DIR}/AllTests.c
 	)
 
@@ -283,7 +285,7 @@ endif()
 if (APPLE)
 
 	# Configure backwards-compatible support (if your project allows it)
-	SET(CMAKE_OSX_DEPLOYMENT_TARGET "10.4" CACHE STRING "Deployment target for OSX" FORCE)
+	SET(CMAKE_OSX_DEPLOYMENT_TARGET "10.6" CACHE STRING "Deployment target for OSX" FORCE)
 	SET(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "10.0" CACHE STRING "Deployment target for iOS" FORCE)
 
 	# Compile for x86_64 and i386.  ppc no longer supported
