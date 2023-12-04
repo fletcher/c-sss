@@ -102,7 +102,7 @@ static unsigned long mix(unsigned long a, unsigned long b, unsigned long c) {
 
 void seed_random(void) {
 	unsigned long seed = mix(clock(), time(NULL), getpid());
-	srand(seed);
+	srand((unsigned int)seed);
 }
 
 
@@ -267,7 +267,7 @@ int join_shares(int * xy_pairs, int n) {
 
 		value = xy_pairs[i * 2 + 1];
 
-		secret = (secret + (value * numerator * modInverse(denominator))) % prime;
+		secret = (secret + (int)(value * numerator * modInverse((int)denominator))) % prime;
 	}
 
 	/* Sometimes we're getting negative numbers, and need to fix that */
@@ -313,7 +313,7 @@ void Test_join_shares(CuTest * tc) {
 */
 
 char ** split_string(char * secret, int n, int t) {
-	int len = strlen(secret);
+	int len = (int)strlen(secret);
 
 	char ** shares = malloc (sizeof(char *) * n);
 	int i;
@@ -376,7 +376,7 @@ char * join_strings(char ** shares, int n) {
 	}
 
 	// `len` = number of hex pair values in shares
-	int len = (strlen(shares[0]) - 6) / 2;
+	int len = ((int)strlen(shares[0]) - 6) / 2;
 
 	char * result = malloc(len + 1);
 	char codon[3];
@@ -396,7 +396,7 @@ char * join_strings(char ** shares, int n) {
 		codon[0] = shares[i][0];
 		codon[1] = shares[i][1];
 
-		x[i] = strtol(codon, NULL, 16);
+		x[i] = (int)strtol(codon, NULL, 16);
 	}
 
 	// Iterate through characters and calculate original secret
@@ -415,7 +415,7 @@ char * join_strings(char ** shares, int n) {
 			if (memcmp(codon, "G0", 2) == 0) {
 				chunks[j * 2 + 1] = 256;
 			} else {
-				chunks[j * 2 + 1] = strtol(codon, NULL, 16);
+				chunks[j * 2 + 1] = (int)strtol(codon, NULL, 16);
 			}
 		}
 
@@ -468,7 +468,7 @@ void Test_split_string(CuTest * tc) {
 char * generate_share_strings(char * secret, int n, int t) {
 	char ** result = split_string(secret, n, t);
 
-	int len = strlen(secret);
+	int len = (int)strlen(secret);
 	int key_len = 6 + 2 * len + 1;
 	int i;
 
