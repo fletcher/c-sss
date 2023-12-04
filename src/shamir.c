@@ -69,7 +69,7 @@ static int prime = 257;
 	Need a less predictable way to seed rand().
 */
 
-unsigned long mix(unsigned long a, unsigned long b, unsigned long c) {
+static unsigned long mix(unsigned long a, unsigned long b, unsigned long c) {
 	a = a - b;
 	a = a - c;
 	a = a ^ (c >> 13);

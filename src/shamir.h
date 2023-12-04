@@ -19,6 +19,9 @@
 /// Seed the random number generator.  MUST BE CALLED before using the library (unless on arc4random() system).
 void seed_random(void);
 
+/// Given a secret, `n`, and `t`, create an array of secrets as text strings.
+char ** split_string(char * secret, int n, int t);
+
 /// Given a secret, `n`, and `t`, create a list of shares (`\n` separated).
 char * generate_share_strings(char * secret, int n, int t);
 
