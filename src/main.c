@@ -92,7 +92,7 @@ int main( int argc, char ** argv ) {
 
 		int t = atoi(argv[3]);
 
-		char * shares = generate_share_strings(secret, n, t);
+		char * shares = generate_share_strings(secret, n, t, false);
 
 		fprintf(stdout, "%s", shares);
 
@@ -105,7 +105,7 @@ int main( int argc, char ** argv ) {
 
 		int t = atoi(argv[2]);
 
-		char * shares = generate_share_strings(secret->str, n, t);
+		char * shares = generate_share_strings(secret->str, n, t, false);
 
 		fprintf(stdout, "%s\n", shares);
 

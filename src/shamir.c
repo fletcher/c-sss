@@ -124,6 +124,13 @@ int modular_exponentiation(int base, int exp, int mod) {
 }
 
 
+#ifdef TEST
+void Test_modular_exponentiation(CuTest * tc) {
+	// https://en.wikipedia.org/wiki/Modular_exponentiation
+	CuAssertIntEquals(tc, 445, modular_exponentiation(4, 13, 497));
+}
+#endif
+
 
 /*
 	split_number() -- Split a number into shares
@@ -312,12 +319,22 @@ void Test_join_shares(CuTest * tc) {
 	return an array of pointers to strings;
 */
 
-char ** split_string(char * secret, int n, int t) {
-	int len = (int)strlen(secret);
-
+char ** split_string(char * secret, int len, int n, int t, bool random_id) {
 	char ** shares = malloc (sizeof(char *) * n);
 	int i;
 	int buflen = 2 * len + 6 + 1;
+
+	int max_len = strlen(secret);
+
+	int id = 0;
+
+	if (random_id) {
+		// optional unique identifier to allow grouping of shares that belong together
+		// However, this does potentially lower security a bit since it is more obvious which shares belong together
+		id = (rand() % 256);
+	} else {
+		// default AA (0) for compatibility with above web site, however that site is no longer active.
+	}
 
 	for (i = 0; i < n; ++i) {
 		/* need two characters to encode each character */
@@ -328,13 +345,13 @@ char ** split_string(char * secret, int n, int t) {
 		*/
 		shares[i] = (char *) malloc(buflen * sizeof(char));
 
-		snprintf(shares[i], buflen, "%02X%02XAA", (i + 1), t);
+		snprintf(shares[i], buflen, "%02X%02X%02X", (i + 1), t, id);
 	}
 
 	/* Now, handle the secret */
 
 	for (i = 0; i < len; ++i) {
-		int letter = secret[i]; // - '0';
+		int letter = (i < max_len) ? secret[i] : 0;
 
 		if (letter < 0) {
 			letter = 256 + letter;
@@ -444,7 +461,7 @@ void Test_split_string(CuTest * tc) {
 	int i;
 
 	for (i = 0; i < count; ++i) {
-		char ** result = split_string(phrase, n, t);
+		char ** result = split_string(phrase, strlen(phrase), n, t, true);
 
 		/* Extract secret using first t shares */
 		char * answer = join_strings(result, t);
@@ -467,10 +484,9 @@ void Test_split_string(CuTest * tc) {
 		one per line
 */
 
-char * generate_share_strings(char * secret, int n, int t) {
-	char ** result = split_string(secret, n, t);
+char * generate_share_strings(char * secret, int len, int n, int t, bool random_id) {
+	char ** result = split_string(secret, len, n, t, random_id);
 
-	int len = (int)strlen(secret);
 	int key_len = 6 + 2 * len + 1;
 	int i;
 
