@@ -317,6 +317,7 @@ char ** split_string(char * secret, int n, int t) {
 
 	char ** shares = malloc (sizeof(char *) * n);
 	int i;
+	int buflen = 2 * len + 6 + 1;
 
 	for (i = 0; i < n; ++i) {
 		/* need two characters to encode each character */
@@ -325,9 +326,9 @@ char ** split_string(char * secret, int n, int t) {
 
 			http://www.christophedavid.org/w/c/w.php/Calculators/ShamirSecretSharing
 		*/
-		shares[i] = (char *) malloc(2 * len + 6 + 1);
+		shares[i] = (char *) malloc(buflen * sizeof(char));
 
-		sprintf(shares[i], "%02X%02XAA", (i + 1), t);
+		snprintf(shares[i], buflen, "%02X%02XAA", (i + 1), t);
 	}
 
 	/* Now, handle the secret */
@@ -344,9 +345,9 @@ char ** split_string(char * secret, int n, int t) {
 
 		for (j = 0; j < n; ++j) {
 			if (chunks[j] == 256) {
-				sprintf(shares[j] + 6 + i * 2, "G0");	/* Fake code */
+				snprintf(shares[j] + 6 + i * 2, buflen - 6 - i * 2, "G0");	/* Fake code */
 			} else {
-				sprintf(shares[j] + 6 + i * 2, "%02X", chunks[j]);
+				snprintf(shares[j] + 6 + i * 2, buflen - 6 - i * 2, "%02X", chunks[j]);
 			}
 		}
 
@@ -377,8 +378,9 @@ char * join_strings(char ** shares, int n) {
 
 	// `len` = number of hex pair values in shares
 	int len = ((int)strlen(shares[0]) - 6) / 2;
+	int buflen = len + 1;
 
-	char * result = malloc(len + 1);
+	char * result = malloc(buflen * sizeof(char));
 	char codon[3];
 	codon[2] = '\0';	// Must terminate the string!
 
@@ -424,7 +426,7 @@ char * join_strings(char ** shares, int n) {
 
 		free(chunks);
 
-		sprintf(result + i, "%c", letter);
+		snprintf(result + i, buflen - i, "%c", letter);
 	}
 
 	return result;
@@ -472,10 +474,12 @@ char * generate_share_strings(char * secret, int n, int t) {
 	int key_len = 6 + 2 * len + 1;
 	int i;
 
-	char * shares = malloc(key_len * n + 1);
+	int buflen = key_len * n + 1;
+
+	char * shares = malloc(buflen * sizeof(char));
 
 	for (i = 0; i < n; ++i) {
-		sprintf(shares + i * key_len, "%s\n", result[i]);
+		snprintf(shares + i * key_len, buflen - i * key_len, "%s\n", result[i]);
 	}
 
 	free_string_shares(result, n);
