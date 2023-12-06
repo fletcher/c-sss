@@ -324,7 +324,7 @@ char ** split_string(char * secret, int len, int n, int t, bool random_id) {
 	int i;
 	int buflen = 2 * len + 6 + 1;
 
-	int max_len = strlen(secret);
+	int max_len = (int)strlen(secret);
 
 	int id = 0;
 
