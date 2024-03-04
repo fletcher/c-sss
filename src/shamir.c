@@ -322,6 +322,11 @@ void Test_join_shares(CuTest * tc) {
 char ** split_string(char * secret, int len, int n, int t, bool random_id) {
 	char ** shares = malloc (sizeof(char *) * n);
 	int i;
+
+	if (!len) {
+		len = strlen(secret);
+	}
+
 	int buflen = 2 * len + 6 + 1;
 
 	int max_len = (int)strlen(secret);
@@ -333,7 +338,8 @@ char ** split_string(char * secret, int len, int n, int t, bool random_id) {
 		// However, this does potentially lower security a bit since it is more obvious which shares belong together
 		id = (rand() % 256);
 	} else {
-		// default AA (0) for compatibility with above web site, however that site is no longer active.
+		// default AA (170) for compatibility with above web site, however that site is no longer active.
+		id = 170;
 	}
 
 	for (i = 0; i < n; ++i) {
