@@ -319,17 +319,19 @@ void Test_join_shares(CuTest * tc) {
 	return an array of pointers to strings;
 */
 
-char ** split_string(char * secret, int len, int n, int t, bool random_id) {
+char ** split_string(unsigned char * secret, int max_len, int pad_len, int n, int t, bool random_id) {
 	char ** shares = malloc (sizeof(char *) * n);
 	int i;
 
-	if (!len) {
-		len = strlen(secret);
+	if (!max_len) {
+		max_len = strlen((const char *) secret);
 	}
 
-	int buflen = 2 * len + 6 + 1;
+	if (!pad_len) {
+		pad_len = max_len;
+	}
 
-	int max_len = (int)strlen(secret);
+	int buflen = 2 * pad_len + 6 + 1;
 
 	int id = 0;
 
@@ -356,7 +358,7 @@ char ** split_string(char * secret, int len, int n, int t, bool random_id) {
 
 	/* Now, handle the secret */
 
-	for (i = 0; i < len; ++i) {
+	for (i = 0; i < pad_len; ++i) {
 		int letter = (i < max_len) ? secret[i] : 0;
 
 		if (letter < 0) {
@@ -467,7 +469,7 @@ void Test_split_string(CuTest * tc) {
 	int i;
 
 	for (i = 0; i < count; ++i) {
-		char ** result = split_string(phrase, strlen(phrase), n, t, true);
+		char ** result = split_string((unsigned char *) phrase, strlen(phrase), strlen(phrase), n, t, true);
 
 		/* Extract secret using first t shares */
 		char * answer = join_strings(result, t);
@@ -490,10 +492,18 @@ void Test_split_string(CuTest * tc) {
 		one per line
 */
 
-char * generate_share_strings(char * secret, int len, int n, int t, bool random_id) {
-	char ** result = split_string(secret, len, n, t, random_id);
+char * generate_share_strings(unsigned char * secret, int max_len, int pad_len, int n, int t, bool random_id) {
+	if (!max_len) {
+		max_len = strlen((const char *) secret);
+	}
 
-	int key_len = 6 + 2 * len + 1;
+	if (!pad_len) {
+		pad_len = max_len;
+	}
+
+	char ** result = split_string(secret, max_len, pad_len, n, t, random_id);
+
+	int key_len = 6 + 2 * pad_len + 1;
 	int i;
 
 	int buflen = key_len * n + 1;
