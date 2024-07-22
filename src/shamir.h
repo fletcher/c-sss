@@ -33,7 +33,8 @@ char * generate_share_strings(unsigned char * secret, int len, int pad_len, int 
 /// Given a list of shares (`\n` separated without leading whitespace), recreate the original secret.
 char * extract_secret_from_share_strings(const char * string);
 
-char * join_strings(char ** shares, int n);
+char * clean_join_strings(const char ** shares, int n);
+char * join_strings(const char ** shares, int n);
 
 void free_string_shares(char ** shares, int n);
 

@@ -394,7 +394,7 @@ void free_string_shares(char ** shares, int n) {
 }
 
 
-char * join_strings(char ** shares, int n) {
+char * join_strings(const char ** shares, int n) {
 	/* TODO: Check if we have a quorum */
 
 	if ((n == 0) || (shares == NULL) || (shares[0] == NULL)) {
