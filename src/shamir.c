@@ -581,7 +581,7 @@ char * extract_secret_from_share_strings(const char * string) {
 
 	i++;
 
-	char * secret = join_strings(shares, i);
+	char * secret = join_strings((const char **) shares, i);
 
 	free_string_shares(shares, i);
 	free(temp_string);
