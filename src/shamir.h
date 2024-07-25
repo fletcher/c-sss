@@ -28,7 +28,7 @@ void seed_random(void);
 char ** split_string(unsigned char * secret, int len, int pad_len, int n, int t, bool random_id);
 
 /// Given a secret, `n`, and `t`, create a list of shares (`\n` separated).
-char * generate_share_strings(unsigned char * secret, int len, int pad_len, int n, int t, bool random_id);
+char * generate_share_strings(const char * secret, int len, int pad_len, int n, int t, bool random_id);
 
 /// Given a list of shares (`\n` separated without leading whitespace), recreate the original secret.
 char * extract_secret_from_share_strings(const char * string);

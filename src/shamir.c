@@ -492,9 +492,9 @@ void Test_split_string(CuTest * tc) {
 		one per line
 */
 
-char * generate_share_strings(unsigned char * secret, int max_len, int pad_len, int n, int t, bool random_id) {
+char * generate_share_strings(const char * secret, int max_len, int pad_len, int n, int t, bool random_id) {
 	if (!max_len) {
-		max_len = strlen((const char *) secret);
+		max_len = strlen(secret);
 	}
 
 	if (!pad_len) {
